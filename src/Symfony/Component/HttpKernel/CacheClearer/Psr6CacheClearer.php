@@ -20,9 +20,32 @@ class Psr6CacheClearer implements CacheClearerInterface
 {
     private $pools = array();
 
+    public function __construct(array $pools = array())
+    {
+        $this->pools = $pools;
+    }
+
     public function addPool(CacheItemPoolInterface $pool)
     {
-        $this->pools[] = $pool;
+        @trigger_error(sprintf('The %s() method is deprecated since version 3.3 and will be removed in 4.0. Pass an array of pools indexed by id to the constructor instead.', __METHOD__));
+
+        if (!in_array($pool, $this->pools, true)) {
+            $this->pools[] = $pool;
+        }
+    }
+
+    public function hasPool($name)
+    {
+        return isset($this->pools[$name]);
+    }
+
+    public function clearPool($name)
+    {
+        if (!isset($this->pools[$name])) {
+            throw new \InvalidArgumentException(sprintf('Cache pool %s is not referenced.'));
+        }
+
+        $this->pools[$name]->clear();
     }
 
     /**

@@ -50,6 +50,6 @@ class CachePoolClearerPassTest extends \PHPUnit_Framework_TestCase
             $pass->process($container);
         }
 
-        $this->assertEquals(array(array('addPool', array(new Reference('public.pool')))), $clearer->getMethodCalls());
+        $this->assertEquals(array(array('public.pool' => new Reference('public.pool'))), $clearer->getArguments());
     }
 }

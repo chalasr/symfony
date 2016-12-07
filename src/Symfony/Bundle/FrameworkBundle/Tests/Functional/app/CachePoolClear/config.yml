@@ -1,0 +1,16 @@
+imports:
+    - { resource: ../config/default.yml }
+
+services:
+    dummy1:
+        class: Symfony\Bundle\FrameworkBundle\Tests\Fixtures\DeclaredClass
+        arguments: ['@cache.private_pool']
+    dummy2:
+        parent: dummy1
+
+framework:
+    cache:
+        pools:
+            cache.private_pool: ~
+            cache.public_pool:
+                public: true
