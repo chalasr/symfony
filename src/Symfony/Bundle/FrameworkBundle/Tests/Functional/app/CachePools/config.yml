@@ -11,3 +11,5 @@ framework:
                 adapter: cache.pool3
             cache.pool3:
                 clearer: ~
+            cache.private_pool:
+                public: false
