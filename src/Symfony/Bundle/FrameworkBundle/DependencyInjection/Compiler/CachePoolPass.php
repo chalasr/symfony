@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Bundle\FrameworkBundle\CacheClearer\CachePoolClearer;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -42,6 +43,10 @@ class CachePoolPass implements CompilerPassInterface
             'namespace',
             'default_lifetime',
         );
+
+        $poolClearer = new Definition(CachePoolClearer::class);
+        $container->setDefinition('cache.pool_clearer', $poolClearer);
+
         foreach ($container->findTaggedServiceIds('cache.pool') as $id => $tags) {
             $adapter = $pool = $container->getDefinition($id);
             if ($pool->isAbstract()) {
@@ -83,6 +88,8 @@ class CachePoolPass implements CompilerPassInterface
             if (null !== $clearer) {
                 $pool->addTag('cache.pool', array('clearer' => $clearer));
             }
+
+            $poolClearer->addMethodCall('addPool', array($id, new Reference($id)));
         }
     }
 
