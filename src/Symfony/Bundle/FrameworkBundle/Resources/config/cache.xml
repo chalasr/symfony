@@ -93,7 +93,7 @@
             </call>
         </service>
 
-        <service id="cache.default_clearer" class="Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer">
+        <service id="cache.default_clearer" class="Symfony\Bundle\FrameworkBundle\CacheClearer\CachePoolClearer">
             <tag name="kernel.cache_clearer" />
         </service>
 

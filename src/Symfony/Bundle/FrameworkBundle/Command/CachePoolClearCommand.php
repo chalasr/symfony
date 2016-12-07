@@ -54,7 +54,7 @@ EOF
         $clearers = array();
         $container = $this->getContainer();
         $cacheDir = $container->getParameter('kernel.cache_dir');
-        $poolClearer = $container->get('cache.pool_clearer');
+        $poolClearer = $container->get('cache.default_clearer');
 
         foreach ($input->getArgument('pools') as $id) {
             if ($poolClearer->hasPool($id)) {

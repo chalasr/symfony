@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
 
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolPass;
+use Symfony\Bundle\FrameworkBundle\CacheClearer\CachePoolClearer;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
@@ -33,6 +34,7 @@ class CachePoolPassTest extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.name', 'app');
         $container->setParameter('kernel.environment', 'prod');
         $container->setParameter('kernel.root_dir', 'foo');
+        $container->setDefinition('cache.default_clearer', new Definition(CachePoolClearer::class));
         $adapter = new Definition();
         $adapter->setAbstract(true);
         $adapter->addTag('cache.pool');
@@ -55,6 +57,7 @@ class CachePoolPassTest extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.name', 'app');
         $container->setParameter('kernel.environment', 'prod');
         $container->setParameter('cache.prefix.seed', 'foo');
+        $container->setDefinition('cache.default_clearer', new Definition(CachePoolClearer::class));
         $cachePool = new Definition();
         $cachePool->addTag('cache.pool', array(
             'provider' => 'foobar',
@@ -84,6 +87,7 @@ class CachePoolPassTest extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.name', 'app');
         $container->setParameter('kernel.environment', 'prod');
         $container->setParameter('kernel.root_dir', 'foo');
+        $container->setDefinition('cache.default_clearer', new Definition(CachePoolClearer::class));
         $adapter = new Definition();
         $adapter->setAbstract(true);
         $adapter->addTag('cache.pool');

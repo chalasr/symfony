@@ -44,8 +44,7 @@ class CachePoolPass implements CompilerPassInterface
             'default_lifetime',
         );
 
-        $poolClearer = new Definition(CachePoolClearer::class);
-        $container->setDefinition('cache.pool_clearer', $poolClearer);
+        $poolClearer = $container->getDefinition('cache.default_clearer');
 
         foreach ($container->findTaggedServiceIds('cache.pool') as $id => $tags) {
             $adapter = $pool = $container->getDefinition($id);
