@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Clear cache pools.
@@ -54,19 +55,21 @@ EOF
         $clearers = array();
         $container = $this->getContainer();
         $cacheDir = $container->getParameter('kernel.cache_dir');
-        $poolRegistry = $container->get('cache.pool_registry');
+        $defaultClearer = $container->get('cache.default_clearer');
 
         foreach ($input->getArgument('pools') as $id) {
-            if ($poolRegistry->has($id)) {
-                $pools[$id] = $poolRegistry->get($id);
+            if ($defaultClearer->hasPool($id)) {
+                $pools[$id] = $id;
             } else {
-                $clearer = $container->get($id);
+                $pool = $container->get($id);
 
-                if (!$clearer instanceof Psr6CacheClearer) {
+                if ($pool instanceof CacheItemPoolInterface) {
+                    $pools[$id] = $pool;
+                } elseif ($pool instanceof Psr6CacheClearer) {
+                    $clearers[$id] = $pool;
+                } else {
                     throw new \InvalidArgumentException(sprintf('"%s" is not a cache pool nor a cache clearer.', $id));
                 }
-
-                $clearers[$id] = $clearer;
             }
         }
 
@@ -77,7 +80,12 @@ EOF
 
         foreach ($pools as $id => $pool) {
             $io->comment(sprintf('Clearing cache pool: <info>%s</info>', $id));
-            $pool->clear();
+
+            if ($pool instanceof CacheItemPoolInterface) {
+                $pool->clear();
+            } else {
+                $defaultClearer->clearPool($id);
+            }
         }
 
         $io->success('Cache was successfully cleared.');

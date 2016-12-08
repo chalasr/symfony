@@ -96,25 +96,6 @@ class CachePoolsTest extends WebTestCase
         $this->assertTrue($item->isHit());
     }
 
-    public function testCachePoolRegistry()
-    {
-        static::bootKernel();
-        $container = static::$kernel->getContainer();
-        $registry = $container->get('cache.pool_registry');
-
-        $this->assertInstanceof(FilesystemAdapter::class, $registry->get('cache.pool1'));
-        $this->assertInstanceof(FilesystemAdapter::class, $registry->get('cache.pool2'));
-        $this->assertInstanceof(FilesystemAdapter::class, $registry->get('cache.private_pool'), 'Cache pool registry should reference private cache pools');
-
-        try {
-            $registry->get('unknown');
-        } catch (\InvalidArgumentException $e) {
-            return $this->assertSame('Cache pool "unknown" is not referenced.', $e->getMessage());
-        }
-
-        $this->fail('Calling CachePoolRegistry::get() with an unknown pool id should throw an exception.');
-    }
-
     protected static function createKernel(array $options = array())
     {
         return parent::createKernel(array('test_case' => 'CachePools') + $options);

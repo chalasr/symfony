@@ -44,9 +44,6 @@ class CachePoolPass implements CompilerPassInterface
             'default_lifetime',
         );
 
-        $registry = new Definition(CachePoolRegistry::class);
-        $container->setDefinition('cache.pool_registry', $registry);
-
         foreach ($container->findTaggedServiceIds('cache.pool') as $id => $tags) {
             $adapter = $pool = $container->getDefinition($id);
             if ($pool->isAbstract()) {
@@ -88,8 +85,6 @@ class CachePoolPass implements CompilerPassInterface
             if (null !== $clearer) {
                 $pool->addTag('cache.pool', array('clearer' => $clearer));
             }
-
-            $registry->addMethodCall('add', array($id, new Reference($id)));
         }
     }
 

@@ -27,17 +27,23 @@ final class CachePoolClearerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $container->getParameterBag()->remove('cache.prefix.seed');
+        $poolsByClearer = array();
 
         foreach ($container->findTaggedServiceIds('cache.pool') as $id => $attributes) {
+            dump($id);
             foreach (array_reverse($attributes) as $attr) {
                 if (isset($attr['clearer'])) {
-                    $clearer = $container->getDefinition($attr['clearer']);
-                    $clearer->addMethodCall('addPool', array(new Reference($id)));
+                    $poolsByClearer[$attr['clearer']][$id] = new Reference($id);
                 }
                 if (array_key_exists('clearer', $attr)) {
                     break;
                 }
             }
+        }
+
+        foreach ($poolsByClearer as $clearer => $pools) {
+            $clearer = $container->getDefinition($clearer);
+            $clearer->addArgument($pools);
         }
 
         if (!$container->has('cache.annotations')) {
