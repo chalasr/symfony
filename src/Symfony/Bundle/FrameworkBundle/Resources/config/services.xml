@@ -69,5 +69,9 @@
             <tag name="config_cache.resource_checker" priority="-990" />
         </service>
 
+        <service id="bundle.resource_locator" class="Symfony\Component\HttpKernel\Bundle\BundleResourceLocator">
+            <argument>%kernel.bundles_metadata%</argument>
+        </service>
+
     </services>
 </container>
