@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Helper;
 
+@trigger_error('The '.FormHelper::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\Form\FormRendererInterface;
 use Symfony\Component\Form\FormView;
@@ -20,6 +22,8 @@ use Symfony\Component\Form\FormView;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class FormHelper extends Helper
 {

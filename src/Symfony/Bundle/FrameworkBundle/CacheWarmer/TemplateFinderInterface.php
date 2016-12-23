@@ -11,10 +11,14 @@
 
 namespace Symfony\Bundle\FrameworkBundle\CacheWarmer;
 
+@trigger_error('The '.TemplateFinderInterface::class.' interface is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 /**
  * Interface for finding all the templates.
  *
  * @author Victor Berchet <victor@suumit.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 interface TemplateFinderInterface
 {

@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Helper;
 
+@trigger_error('The '.ActionsHelper::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
@@ -19,6 +21,8 @@ use Symfony\Component\HttpKernel\Controller\ControllerReference;
  * ActionsHelper manages action inclusions.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class ActionsHelper extends Helper
 {

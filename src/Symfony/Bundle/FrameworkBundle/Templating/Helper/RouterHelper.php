@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Helper;
 
+@trigger_error('The '.RouterHelper::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -18,6 +20,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * RouterHelper manages links between pages in a template context.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class RouterHelper extends Helper
 {

@@ -14,6 +14,9 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Templating;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
 
+/**
+ * @group legacy
+ */
 class TemplateReferenceTest extends TestCase
 {
     public function testGetPathWorksWithNamespacedControllers()

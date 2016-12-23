@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\CacheWarmer;
 
+@trigger_error('The '.TemplateFinder::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Templating\TemplateNameParserInterface;
@@ -21,6 +23,8 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  * Finds all the templates.
  *
  * @author Victor Berchet <victor@suumit.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TemplateFinder implements TemplateFinderInterface
 {

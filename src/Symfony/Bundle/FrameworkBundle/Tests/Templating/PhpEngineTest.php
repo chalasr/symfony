@@ -21,6 +21,9 @@ use Symfony\Component\Templating\TemplateNameParser;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
+/**
+ * @group legacy
+ */
 class PhpEngineTest extends TestCase
 {
     public function testEvaluateAddsAppGlobal()

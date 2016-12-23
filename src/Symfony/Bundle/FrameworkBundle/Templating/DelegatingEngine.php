@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating;
 
+@trigger_error('The '.DelegatingEngine::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Templating\DelegatingEngine as BaseDelegatingEngine;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
  * DelegatingEngine selects an engine for a given template.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class DelegatingEngine extends BaseDelegatingEngine implements EngineInterface
 {

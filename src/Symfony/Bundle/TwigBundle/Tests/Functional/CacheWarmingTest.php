@@ -17,6 +17,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 
+/**
+ * @group legacy
+ */
 class CacheWarmingTest extends TestCase
 {
     public function testCacheIsProperlyWarmedWhenTemplatingIsAvailable()

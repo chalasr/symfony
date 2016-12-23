@@ -11,6 +11,8 @@
 
 namespace Symfony\Bridge\Twig;
 
+@trigger_error('The '.TwigEngine::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use \Twig_Environment instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Templating\StreamingEngineInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
@@ -25,6 +27,8 @@ use Twig\Template;
  * This engine knows how to render Twig templates.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TwigEngine implements EngineInterface, StreamingEngineInterface
 {

@@ -277,6 +277,8 @@ class FrameworkExtension extends Extension
         }
 
         if ($this->isConfigEnabled($container, $config['templating'])) {
+            @trigger_error('Enabling the Templating component is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
             if (!class_exists('Symfony\Component\Templating\PhpEngine')) {
                 throw new LogicException('Templating support cannot be enabled as the Templating component is not installed.');
             }

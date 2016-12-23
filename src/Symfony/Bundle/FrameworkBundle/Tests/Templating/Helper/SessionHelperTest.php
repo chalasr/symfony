@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\SessionHelper;
 
+/**
+ * @group legacy
+ */
 class SessionHelperTest extends TestCase
 {
     protected $requestStack;

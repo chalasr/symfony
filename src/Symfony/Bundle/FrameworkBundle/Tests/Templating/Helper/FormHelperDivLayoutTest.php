@@ -20,6 +20,9 @@ use Symfony\Component\Templating\PhpEngine;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\TranslatorHelper;
 
+/**
+ * @group legacy
+ */
 class FormHelperDivLayoutTest extends AbstractDivLayoutTest
 {
     /**

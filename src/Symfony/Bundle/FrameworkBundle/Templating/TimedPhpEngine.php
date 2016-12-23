@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating;
 
+@trigger_error('The '.TimedPhpEngine::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -20,6 +22,8 @@ use Symfony\Component\Templating\Loader\LoaderInterface;
  * Times the time spent to render a template.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TimedPhpEngine extends PhpEngine
 {

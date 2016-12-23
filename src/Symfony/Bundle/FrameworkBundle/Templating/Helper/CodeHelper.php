@@ -11,11 +11,15 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Helper;
 
+@trigger_error('The '.CodeHelper::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\HttpKernel\Debug\FileLinkFormatter;
 use Symfony\Component\Templating\Helper\Helper;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class CodeHelper extends Helper
 {

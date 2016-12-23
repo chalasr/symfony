@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Helper;
 
+@trigger_error('The '.SessionHelper::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,6 +20,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * SessionHelper provides read-only access to the session attributes.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class SessionHelper extends Helper
 {

@@ -257,6 +257,8 @@ trait ControllerTrait
     protected function renderView($view, array $parameters = array())
     {
         if ($this->container->has('templating')) {
+            @trigger_error('Using the "templating" service is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
             return $this->container->get('templating')->render($view, $parameters);
         }
 
@@ -281,6 +283,8 @@ trait ControllerTrait
     protected function render($view, array $parameters = array(), Response $response = null)
     {
         if ($this->container->has('templating')) {
+            @trigger_error('Using the "templating" service is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
             $content = $this->container->get('templating')->render($view, $parameters);
         } elseif ($this->container->has('twig')) {
             $content = $this->container->get('twig')->render($view, $parameters);
@@ -311,6 +315,8 @@ trait ControllerTrait
     protected function stream($view, array $parameters = array(), StreamedResponse $response = null)
     {
         if ($this->container->has('templating')) {
+            @trigger_error('Using the "templating" service is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
             $templating = $this->container->get('templating');
 
             $callback = function () use ($templating, $view, $parameters) {

@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\RequestHelper;
 
+/**
+ * @group legacy
+ */
 class RequestHelperTest extends TestCase
 {
     protected $requestStack;

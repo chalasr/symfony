@@ -16,6 +16,9 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
+/**
+ * @group legacy
+ */
 class TimedPhpEngineTest extends TestCase
 {
     public function testThatRenderLogsTime()

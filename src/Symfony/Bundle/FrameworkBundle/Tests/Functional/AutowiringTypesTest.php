@@ -40,9 +40,12 @@ class AutowiringTypesTest extends WebTestCase
         $this->assertInstanceOf(CachedReader::class, $annotationReader);
     }
 
+    /**
+     * @group legacy
+     */
     public function testTemplatingAutowiring()
     {
-        static::bootKernel();
+        static::bootKernel(array('root_config' => 'templating.yml', 'environment' => 'templating'));
         $container = static::$kernel->getContainer();
 
         $autowiredServices = $container->get('test.autowiring_types.autowired_services');

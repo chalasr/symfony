@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating\Loader;
 
+@trigger_error('The '.TemplateLocator::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Templating\TemplateReferenceInterface;
 
@@ -18,6 +20,8 @@ use Symfony\Component\Templating\TemplateReferenceInterface;
  * TemplateLocator locates templates in bundles.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TemplateLocator implements FileLocatorInterface
 {

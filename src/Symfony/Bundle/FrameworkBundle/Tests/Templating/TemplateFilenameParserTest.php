@@ -15,6 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateFilenameParser;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
 
+/**
+ * @group legacy
+ */
 class TemplateFilenameParserTest extends TestCase
 {
     protected $parser;

@@ -11,12 +11,16 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating;
 
+@trigger_error('The '.TemplateReference::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\TemplateReference as BaseTemplateReference;
 
 /**
  * Internal representation of a template.
  *
  * @author Victor Berchet <victor@suumit.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TemplateReference extends BaseTemplateReference
 {

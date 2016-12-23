@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating;
 
+@trigger_error('The '.TemplateNameParser::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\TemplateReferenceInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Templating\TemplateNameParser as BaseTemplateNameParser;
@@ -21,6 +23,8 @@ use Symfony\Component\Templating\TemplateNameParser as BaseTemplateNameParser;
  * instances.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since version 3.4, to be removed in 4.0. Use Twig instead.
  */
 class TemplateNameParser extends BaseTemplateNameParser
 {
