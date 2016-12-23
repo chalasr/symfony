@@ -642,6 +642,15 @@ class Command
         return $this->helperSet->get($name);
     }
 
+    public function setAllowedOutputFormats(array $allowedOutputFormats)
+    {
+          if ($this->definition->hasOption('format')) {
+              $option = $this->definition->getOption('format');
+          } else {
+              $option = new InputOption('--format', '', InputOption::VALUE_OPTIONAL, 'The output format', 'txt'):
+          }
+    }
+
     /**
      * Validates a command name.
      *
