@@ -120,6 +120,11 @@ EOF
         $helper = new DescriptorHelper();
         $options['format'] = $input->getOption('format');
         $options['raw_text'] = $input->getOption('raw');
+
+        if (defined('JSON_UNESCAPED_SLASHES') && 'json' === $options['format']) {
+            $options['json_encoding'] = JSON_UNESCAPED_SLASHES;
+        }
+
         $helper->describe($output, $object, $options);
 
         if (!$input->getArgument('name') && $input->isInteractive()) {
