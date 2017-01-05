@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Descriptor\JsonDescriptor;
 use Symfony\Bundle\FrameworkBundle\Console\Descriptor\MarkdownDescriptor;
 use Symfony\Bundle\FrameworkBundle\Console\Descriptor\TextDescriptor;
 use Symfony\Bundle\FrameworkBundle\Console\Descriptor\XmlDescriptor;
+use Symfony\Bundle\FrameworkBundle\Console\Descriptor\YamlDescriptor;
 use Symfony\Component\Console\Helper\DescriptorHelper as BaseDescriptorHelper;
 
 /**
@@ -34,6 +35,7 @@ class DescriptorHelper extends BaseDescriptorHelper
             ->register('xml', new XmlDescriptor())
             ->register('json', new JsonDescriptor())
             ->register('md', new MarkdownDescriptor())
+            ->register('yaml', new YamlDescriptor())
         ;
     }
 }
