@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\WebServerBundle;
+namespace Symfony\Component\WebServer;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>

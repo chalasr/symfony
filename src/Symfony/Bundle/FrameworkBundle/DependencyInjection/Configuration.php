@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\WebServer\WebServer;
 
 /**
  * FrameworkExtension configuration structure.
@@ -118,6 +119,7 @@ class Configuration implements ConfigurationInterface
         $this->addPropertyInfoSection($rootNode);
         $this->addCacheSection($rootNode);
         $this->addPhpErrorsSection($rootNode);
+        $this->addWebServerSection($rootNode);
 
         return $treeBuilder;
     }
@@ -749,6 +751,22 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue($this->debug)
                             ->treatNullLike($this->debug)
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function addWebServerSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('web_server')
+                    ->info('WebServer configuration')
+                    ->{class_exists(WebServer::class) && $this->debug ? 'canBeDisabled' : 'canBeEnabled'}()
+                    ->children()
+                        ->scalarNode('docroot')
+                        ->defaultValue('%kernel.root_dir%/../web')
                     ->end()
                 ->end()
             ->end()

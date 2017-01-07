@@ -11,7 +11,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Symfony WebServerBundle Test Suite">
+        <testsuite name="Symfony WebServer Component Test Suite">
             <directory>./Tests/</directory>
         </testsuite>
     </testsuites>

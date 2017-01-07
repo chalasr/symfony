@@ -37,6 +37,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Workflow;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\WebServer\WebServer;
 
 /**
  * FrameworkExtension.
@@ -201,6 +202,10 @@ class FrameworkExtension extends Extension
 
         if ($this->isConfigEnabled($container, $config['property_info'])) {
             $this->registerPropertyInfoConfiguration($config['property_info'], $container, $loader);
+        }
+
+        if ($this->isConfigEnabled($container, $config['web_server'])) {
+            $this->registerWebServerConfiguration($config['web_server'], $container, $loader);
         }
 
         $this->addAnnotatedClassesToCompile(array(
@@ -1304,6 +1309,16 @@ class FrameworkExtension extends Extension
                 'Symfony\Component\Cache\CacheItem',
             ));
         }
+    }
+
+    private function registerWebServerConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        if (!class_exists(WebServer::class)) {
+            throw new LogicException('WebServer support cannot be enabled as the WebServer component is not installed.');
+        }
+
+        $container->setParameter('web_server.docroot', $config['docroot']);
+        $loader->load('webserver.xml');
     }
 
     /**

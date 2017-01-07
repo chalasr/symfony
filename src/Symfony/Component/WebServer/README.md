@@ -1,5 +1,5 @@
-WebServerBundle
-===============
+WebServer Component
+===================
 
 Resources
 ---------

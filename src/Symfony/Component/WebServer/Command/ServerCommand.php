@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\WebServerBundle\Command;
+namespace Symfony\Component\WebServer\Command;
 
 use Symfony\Component\Console\Command\Command;
 

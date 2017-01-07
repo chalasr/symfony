@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\WebServerBundle\Command;
+namespace Symfony\Component\WebServer\Command;
 
-use Symfony\Bundle\WebServerBundle\WebServer;
+use Symfony\Component\WebServer\WebServer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
