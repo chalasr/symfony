@@ -246,8 +246,8 @@ class ArgvInput extends Input
                 throw new \RuntimeException(sprintf('The "--%s" option requires a value.', $name));
             }
 
-            if (!$option->isArray()) {
-                $value = $option->isValueOptional() ? $option->getDefault() : true;
+            if (!$option->isArray() && !$option->isValueOptional()) {
+                $value = true;
             }
         }
 

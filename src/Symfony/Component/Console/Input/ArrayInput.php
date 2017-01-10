@@ -165,7 +165,9 @@ class ArrayInput extends Input
                 throw new \InvalidArgumentException(sprintf('The "--%s" option requires a value.', $name));
             }
 
-            $value = $option->isValueOptional() ? $option->getDefault() : true;
+            if (!$option->isValueOptional()) {
+                $value = true;
+            }
         }
 
         $this->options[$name] = $value;

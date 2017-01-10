@@ -84,6 +84,12 @@ class ArgvInputTest extends \PHPUnit_Framework_TestCase
                 '->parse() parses long options with optional value which is empty (with a = separator) followed by an argument',
             ),
             array(
+                array('cli.php', '--foo'),
+                array(new InputOption('foo', 'f', InputOption::VALUE_OPTIONAL)),
+                array('foo' => null),
+                '->parse() parses long options with optional value which is empty as null',
+            ),
+            array(
                 array('cli.php', '-f'),
                 array(new InputOption('foo', 'f')),
                 array('foo' => true),

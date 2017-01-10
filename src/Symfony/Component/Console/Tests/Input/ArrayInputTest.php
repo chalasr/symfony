@@ -80,10 +80,16 @@ class ArrayInputTest extends \PHPUnit_Framework_TestCase
                 '->parse() parses long options with a default value',
             ),
             array(
-                array('--foo' => null),
+                array(),
                 array(new InputOption('foo', 'f', InputOption::VALUE_OPTIONAL, '', 'default')),
                 array('foo' => 'default'),
-                '->parse() parses long options with a default value',
+                '->parse() use the default value for long options which are not passed',
+            ),
+            array(
+                array('--foo' => null),
+                array(new InputOption('foo', 'f', InputOption::VALUE_OPTIONAL, '', 'default')),
+                array('foo' => null),
+                '->parse() keeps empty values for long options with default values',
             ),
             array(
                 array('-f' => 'bar'),
