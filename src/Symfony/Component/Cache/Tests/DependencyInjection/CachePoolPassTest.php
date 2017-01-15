@@ -9,17 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
+namespace Symfony\Component\Cache\Tests\DependencyInjection;
 
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolPass;
+use Symfony\Component\Cache\DependencyInjection\CachePoolPass;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-/**
- * @group legacy
- */
 class CachePoolPassTest extends \PHPUnit_Framework_TestCase
 {
     private $cachePoolPass;

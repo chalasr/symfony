@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
 
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolClearerPass;
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolPass;
+use Symfony\Component\Cache\DependencyInjection\CachePoolPass;
 use Symfony\Component\DependencyInjection\Compiler\RemoveUnusedDefinitionsPass;
 use Symfony\Component\DependencyInjection\Compiler\RepeatedPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConstraintVal
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddDebugLogProcessorPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddValidatorInitializersPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CacheCollectorPass;
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CachePoolClearerPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ControllerArgumentValueResolverPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\FormPass;
@@ -37,6 +36,7 @@ use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\UnusedTagsPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ConfigCachePass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ValidateWorkflowsPass;
 use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
+use Symfony\Component\Cache\DependencyInjection\CachePoolPass;
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -96,7 +96,9 @@ class FrameworkBundle extends Bundle
         $container->addCompilerPass(new SerializerPass());
         $container->addCompilerPass(new PropertyInfoPass());
         $container->addCompilerPass(new ControllerArgumentValueResolverPass());
-        $container->addCompilerPass(new CachePoolPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 32);
+        if (class_exists(CachePoolPass::class)) {
+            $container->addCompilerPass(new CachePoolPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 32);
+        }
         $container->addCompilerPass(new ValidateWorkflowsPass());
         $container->addCompilerPass(new CachePoolClearerPass(), PassConfig::TYPE_AFTER_REMOVING);
 

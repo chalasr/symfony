@@ -39,6 +39,9 @@ FrameworkBundle
 ---------------
 
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleCommandPass` has been deprecated. Use `Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass` instead.
+ 
+ * The `CachePoolPass` class has been deprecated and will be removed in 4.0, use the
+    `Symfony\Component\Cache\DependencyInjection\CachePoolPass` class instead.
 
 HttpKernel
 -----------

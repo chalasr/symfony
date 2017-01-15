@@ -13,6 +13,8 @@ CHANGELOG
  * Added `GlobalVariables::getToken()`
  * Deprecated `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleCommandPass`. Use `Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass` instead.
  * Added configurable paths for validation files 
+ * The `CachePoolPass` class has been deprecated and will be removed in 4.0, use the
+   `Symfony\Component\Cache\DependencyInjection\CachePoolPass` class instead.
 
 3.2.0
 -----

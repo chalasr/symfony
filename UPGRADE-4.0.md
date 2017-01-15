@@ -159,6 +159,9 @@ FrameworkBundle
 
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleCommandPass` has been removed. Use `Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass` instead.
 
+ * The `CachePoolPass` class has been removed, use the
+   `Symfony\Component\Cache\DependencyInjection\CachePoolPass` class instead.
+
 SecurityBundle
 --------------
 

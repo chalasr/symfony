@@ -29,7 +29,8 @@
         "cache/integration-tests": "^0.15.0",
         "doctrine/cache": "~1.6",
         "doctrine/dbal": "~2.4",
-        "predis/predis": "~1.0"
+        "predis/predis": "~1.0",
+        "symfony/dependency-injection": "~3.2"
     },
     "suggest": {
         "symfony/polyfill-apcu": "For using ApcuAdapter on HHVM"
