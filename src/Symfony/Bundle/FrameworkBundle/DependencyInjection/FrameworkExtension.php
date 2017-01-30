@@ -889,40 +889,28 @@ class FrameworkExtension extends Extension
         }
         $rootDir = $container->getParameter('kernel.root_dir');
         foreach ($container->getParameter('kernel.bundles_metadata') as $name => $bundle) {
-            if (is_dir($dir = $bundle['path'].'/Resources/translations')) {
+            if ($container->fileExists($dir = $bundle['path'].'/Resources/translations')) {
                 $dirs[] = $dir;
-            } else {
-                $container->addResource(new FileExistenceResource($dir));
             }
-            if (is_dir($dir = $rootDir.sprintf('/Resources/%s/translations', $name))) {
+            if ($container->fileExists($dir = $rootDir.sprintf('/Resources/%s/translations', $name))) {
                 $dirs[] = $dir;
-            } else {
-                $container->addResource(new FileExistenceResource($dir));
             }
         }
 
         foreach ($config['paths'] as $dir) {
-            if (is_dir($dir)) {
+            if ($container->fileExists($dir)) {
                 $dirs[] = $dir;
             } else {
-                $container->addResource(new FileExistenceResource($dir));
-
                 throw new \UnexpectedValueException(sprintf('%s defined in translator.paths does not exist or is not a directory', $dir));
             }
         }
 
-        if (is_dir($dir = $rootDir.'/Resources/translations')) {
+        if ($container->fileExists($dir = $rootDir.'/Resources/translations')) {
             $dirs[] = $dir;
-        } else {
-            $container->addResource(new FileExistenceResource($dir));
         }
 
         // Register translation resources
         if ($dirs) {
-            foreach ($dirs as $dir) {
-                $container->addResource(new DirectoryResource($dir));
-            }
-
             $files = array();
             $finder = Finder::create()
                 ->followLinks()
@@ -1028,20 +1016,16 @@ class FrameworkExtension extends Extension
         foreach ($container->getParameter('kernel.bundles_metadata') as $bundle) {
             $dirname = $bundle['path'];
 
-            $container->addResource(new FileExistenceResource($file = $dirname.'/Resources/config/validation.yml'));
-            if (is_file($file)) {
+            if ($container->fileExists($file = $dirname.'/Resources/config/validation.yml')) {
                 $files['yml'][] = $file;
             }
 
-            $container->addResource(new FileExistenceResource($file = $dirname.'/Resources/config/validation.xml'));
-            if (is_file($file)) {
+            if ($container->fileExists($file = $dirname.'/Resources/config/validation.xml')) {
                 $files['xml'][] = $file;
             }
 
-            $container->addResource(new FileExistenceResource($dir = $dirname.'/Resources/config/validation'));
-            if (is_dir($dir)) {
+            if ($container->fileExists($dir = $dirname.'/Resources/config/validation')) {
                 $this->getValidatorMappingFilesFromDir($dir, $files);
-                $container->addResource(new DirectoryResource($dir));
             }
         }
     }
@@ -1233,23 +1217,21 @@ class FrameworkExtension extends Extension
         foreach ($container->getParameter('kernel.bundles_metadata') as $bundle) {
             $dirname = $bundle['path'];
 
-            if (is_file($file = $dirname.'/Resources/config/serialization.xml')) {
+            if ($container->fileExists($file = $dirname.'/Resources/config/serialization.xml')) {
                 $definition = new Definition('Symfony\Component\Serializer\Mapping\Loader\XmlFileLoader', array($file));
                 $definition->setPublic(false);
 
                 $serializerLoaders[] = $definition;
-                $container->addResource(new FileResource($file));
             }
 
-            $container->addResource(new FileExistenceResource($file = $dirname.'/Resources/config/serialization.yml'));
-            if (is_file($file)) {
+            if ($container->fileExists($file = $dirname.'/Resources/config/serialization.yml')) {
                 $definition = new Definition('Symfony\Component\Serializer\Mapping\Loader\YamlFileLoader', array($file));
                 $definition->setPublic(false);
 
                 $serializerLoaders[] = $definition;
             }
 
-            if (is_dir($dir = $dirname.'/Resources/config/serialization')) {
+            if ($container->fileExists($dir = $dirname.'/Resources/config/serialization')) {
                 foreach (Finder::create()->followLinks()->files()->in($dir)->name('*.xml') as $file) {
                     $definition = new Definition('Symfony\Component\Serializer\Mapping\Loader\XmlFileLoader', array($file->getPathname()));
                     $definition->setPublic(false);
@@ -1262,10 +1244,6 @@ class FrameworkExtension extends Extension
 
                     $serializerLoaders[] = $definition;
                 }
-
-                $container->addResource(new DirectoryResource($dir));
-            } else {
-                $container->addResource(new FileExistenceResource($dir));
             }
         }
 
