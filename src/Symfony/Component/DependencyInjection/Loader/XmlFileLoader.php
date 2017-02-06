@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\ClosureProxyArgument;
 use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -492,6 +493,9 @@ class XmlFileLoader extends FileLoader
                     break;
                 case 'iterator':
                     $arguments[$key] = new IteratorArgument($this->getArgumentsAsPhp($arg, $name, false));
+                    break;
+                case 'service-locator':
+                    $arguments[$key] = new ServiceLocatorArgument($this->getArgumentsAsPhp($arg, $name, false));
                     break;
                 case 'string':
                     $arguments[$key] = $arg->nodeValue;
