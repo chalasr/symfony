@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\SecurityBundle\Security;
 
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,7 +35,7 @@ class FirewallMap extends _FirewallMap implements FirewallMapInterface
      */
     private $map;
 
-    public function __construct(ContainerInterface $container, $map)
+    public function __construct(PsrContainerInterface $container, $map)
     {
         parent::__construct($container, $map);
         $this->container = $container;
@@ -109,7 +110,7 @@ class _FirewallMap
     private $map;
     private $contexts;
 
-    public function __construct(ContainerInterface $container, $map)
+    public function __construct(PsrContainerInterface $container, $map)
     {
         $this->container = $container;
         $this->map = $map;
