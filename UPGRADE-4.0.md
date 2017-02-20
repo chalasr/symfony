@@ -187,6 +187,10 @@ FrameworkBundle
 
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\FormPass` class has been
    removed. Use the `Symfony\Component\Form\DependencyInjection\FormPass` class instead.
+   
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\PropertyInfoPass` class has been
+   removed. Use the `Symfony\Component\PropertyInfo\DependencyInjection\PropertyInfoPass`
+   class instead.
 
  * The `Symfony\Bundle\FrameworkBundle\EventListener\SessionListener` class has been removed.
    Use the `Symfony\Component\HttpKernel\EventListener\SessionListener` class instead.
