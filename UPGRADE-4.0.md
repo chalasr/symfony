@@ -191,6 +191,10 @@ FrameworkBundle
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\PropertyInfoPass` class has been
    removed. Use the `Symfony\Component\PropertyInfo\DependencyInjection\PropertyInfoPass`
    class instead.
+   
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\RoutingResolverPass` class has been
+   removed. Use the `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass`
+   class instead.
 
  * The `Symfony\Bundle\FrameworkBundle\EventListener\SessionListener` class has been removed.
    Use the `Symfony\Component\HttpKernel\EventListener\SessionListener` class instead.
