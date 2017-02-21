@@ -21,6 +21,7 @@ CHANGELOG
    Use `Symfony\Component\Console\DependencyInjection\ConfigCachePass` instead.
  * Deprecated `PropertyInfoPass`, use `Symfony\Component\PropertyInfo\DependencyInjection\PropertyInfoPass` instead
  * Deprecated `RoutingResolverPass`, use `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass` instead
+ * Deprecated `ValidateWorkflowsPass`, use `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass` instead
 
 3.2.0
 -----

@@ -32,7 +32,6 @@ use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\CompilerDebugDum
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\TranslationExtractorPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\TranslationDumperPass;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\UnusedTagsPass;
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ValidateWorkflowsPass;
 use Symfony\Component\Config\DependencyInjection\ConfigCachePass;
 use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\PropertyInfo\DependencyInjection\PropertyInfoPass;
@@ -47,6 +46,7 @@ use Symfony\Component\Form\DependencyInjection\FormPass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
+use Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass;
 
 /**
  * Bundle.
@@ -99,7 +99,7 @@ class FrameworkBundle extends Bundle
         $container->addCompilerPass(new DataCollectorTranslatorPass());
         $container->addCompilerPass(new ControllerArgumentValueResolverPass());
         $container->addCompilerPass(new CachePoolPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 32);
-        $container->addCompilerPass(new ValidateWorkflowsPass());
+        $this->addCompilerPassIfExists($container, ValidateWorkflowsPass::class);
         $container->addCompilerPass(new CachePoolClearerPass(), PassConfig::TYPE_AFTER_REMOVING);
         $this->addCompilerPassIfExists($container, FormPass::class);
 

@@ -206,6 +206,9 @@ FrameworkBundle
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ConfigCachePass` class has been removed.
    Use `Symfony\Component\Config\DependencyInjection\ConfigCachePass` class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ValidateWorkflowsPass` class has been
+   removed. Use the `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass`
+   class instead.
 
 HttpFoundation
 ---------------

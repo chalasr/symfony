@@ -91,7 +91,10 @@ FrameworkBundle
    deprecated and will be removed in 4.0. Use the `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass`
    class instead.
 
->>>>>>> b656ab1... Move PropertyInfoPass to the PropertyInfo component
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ValidateWorkflowsPass` class has been
+   deprecated and will be removed in 4.0. Use the `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass`
+   class instead.
+
 HttpKernel
 -----------
 
