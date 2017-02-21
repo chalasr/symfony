@@ -22,6 +22,8 @@ CHANGELOG
  * Deprecated `PropertyInfoPass`, use `Symfony\Component\PropertyInfo\DependencyInjection\PropertyInfoPass` instead
  * Deprecated `RoutingResolverPass`, use `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass` instead
  * Deprecated `ValidateWorkflowsPass`, use `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass` instead
+ * Deprecated `ControllerArgumentValueResolverPass`.
+   Use `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` instead
 
 3.2.0
 -----

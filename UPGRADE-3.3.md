@@ -95,6 +95,10 @@ FrameworkBundle
    deprecated and will be removed in 4.0. Use the `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass`
    class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ControllerArgumentValueResolverPass`
+   class has been deprecated and will be removed in 4.0. 
+   Use the `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` class instead.
+
 HttpKernel
 -----------
 

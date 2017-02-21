@@ -210,6 +210,10 @@ FrameworkBundle
    removed. Use the `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass`
    class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ControllerArgumentValueResolverPass` class has been
+   removed. Use the `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass`
+   class instead.
+
 HttpFoundation
 ---------------
 
