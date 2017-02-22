@@ -214,6 +214,10 @@ FrameworkBundle
    removed. Use the `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass`
    class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddValidatorInitializersPass` class has been
+   removed. Use the `Symfony\Component\Validator\DependencyInjection\AddValidatorInitializersPass`
+   class instead.
+
 HttpFoundation
 ---------------
 

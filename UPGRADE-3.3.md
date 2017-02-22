@@ -99,6 +99,10 @@ FrameworkBundle
    class has been deprecated and will be removed in 4.0. 
    Use the `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddValidatorInitializersPass`
+   class has been deprecated and will be removed in 4.0. 
+   Use the `Symfony\Component\Validator\DependencyInjection\AddValidatorInitializersPass` class instead.
+
 HttpKernel
 -----------
 

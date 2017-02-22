@@ -24,6 +24,8 @@ CHANGELOG
  * Deprecated `ValidateWorkflowsPass`, use `Symfony\Component\Workflow\DependencyInjection\ValidateWorkflowsPass` instead
  * Deprecated `ControllerArgumentValueResolverPass`.
    Use `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` instead
+ * Deprecated `AddValidatorInitializersPass`. Use `Symfony\Component\Validator\DependencyInjection\AddValidatorInitializersPass`
+   instead
 
 3.2.0
 -----
