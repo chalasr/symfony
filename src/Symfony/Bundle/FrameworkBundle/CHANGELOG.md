@@ -26,6 +26,8 @@ CHANGELOG
    Use `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` instead
  * Deprecated `AddValidatorInitializersPass`. Use `Symfony\Component\Validator\DependencyInjection\AddValidatorInitializersPass`
    instead
+ * Deprecated `AddConstraintValidatorsPass`. Use `Symfony\Component\Validator\DependencyInjection\AddConstraintValidatorsPass`
+   instead
 
 3.2.0
 -----

@@ -218,6 +218,10 @@ FrameworkBundle
    removed. Use the `Symfony\Component\Validator\DependencyInjection\AddValidatorInitializersPass`
    class instead.
 
+ * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConstraintValidatorsPass` class has been
+   removed. Use the `Symfony\Component\Validator\DependencyInjection\AddConstraintValidatorsPass`
+   class instead.
+
 HttpFoundation
 ---------------
 

@@ -5,6 +5,7 @@ CHANGELOG
 -----
 
  * added `AddValidatorInitializersPass`
+ * added `AddConstraintValidatorsPass`
 
 3.2.0
 -----
