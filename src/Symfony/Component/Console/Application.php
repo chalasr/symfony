@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Console;
 
+use Symfony\Component\Console\Event\InputDecorator;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\ProcessHelper;
@@ -851,12 +852,30 @@ class Application
             // ignore invalid options/arguments for now, to allow the event listeners to customize the InputDefinition
         }
 
-        // don't bind the input again as it would override any input argument/option set from the command event in
-        // addition to being useless
-        $command->setInputBound(true);
-
-        $event = new ConsoleCommandEvent($command, $input, $output);
+        $event = new ConsoleCommandEvent($command, $eventInput = new InputDecorator($input), $output);
         $this->dispatcher->dispatch(ConsoleEvents::COMMAND, $event);
+
+        $overriddenArguments = $eventInput->getOverriddenArguments();
+        $overriddenOptions = $eventInput->getOverriddenOptions();
+
+        if ($overriddenArguments || $overriddenOptions) {
+            // bind again after the console.command event to parse newly added arguments/options
+            try {
+                $input->bind($command->getDefinition());
+            } catch (ExceptionInterface $e) {
+            }
+            // mark the input as bound to prevent binding it again as it would squash any input argument/option set
+            // from the command event
+            $command->setInputBound(true);
+
+            // sets arguments/options values pre-set/overridden from the console.command event
+            foreach ($overriddenArguments as $k => $v) {
+                $input->setArgument($k, $v);
+            }
+            foreach ($overriddenOptions as $k => $v) {
+                $input->setOption($k, $v);
+            }
+        }
 
         if ($event->commandShouldRun()) {
             try {

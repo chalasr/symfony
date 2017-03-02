@@ -1121,31 +1121,6 @@ class ApplicationTest extends TestCase
         $this->assertEquals('some test value', $extraValue);
     }
 
-    public function testUpdateInputFromConsoleCommandEvent()
-    {
-        $dispatcher = $this->getDispatcher();
-        $dispatcher->addListener('console.command', function (ConsoleCommandEvent $event) {
-            $event->getInput()->setOption('extra', 'overriden');
-        });
-
-        $application = new Application();
-        $application->setDispatcher($dispatcher);
-        $application->setAutoExit(false);
-
-        $application
-            ->register('foo')
-            ->addOption('extra', null, InputOption::VALUE_REQUIRED)
-            ->setCode(function (InputInterface $input, OutputInterface $output) {
-                $output->write('foo.');
-            })
-        ;
-
-        $tester = new ApplicationTester($application);
-        $tester->run(array('command' => 'foo', '--extra' => 'original'));
-
-        $this->assertEquals('overriden', $tester->getInput()->getOption('extra'));
-    }
-
     /**
      * @group legacy
      */
@@ -1245,6 +1220,82 @@ class ApplicationTest extends TestCase
 
         $inputStream = $tester->getInput()->getStream();
         $this->assertEquals($tester->getInput()->isInteractive(), @posix_isatty($inputStream));
+    }
+
+    public function testAddArgumentFromConsoleCommandEvent()
+    {
+        $dispatcher = $this->getDispatcher();
+        $dispatcher->addListener('console.command', function (ConsoleCommandEvent $event) {
+            $event->getCommand()->addArgument('extra', InputArgument::REQUIRED);
+        });
+
+        $application = new Application();
+        $application->setDispatcher($dispatcher);
+        $application->setAutoExit(false);
+
+        $application
+            ->register('foo')
+            ->addOption('extra', null, InputOption::VALUE_REQUIRED)
+            ->setCode(function (InputInterface $input, OutputInterface $output) {
+                $output->write('foo.');
+            })
+        ;
+
+        $tester = new ApplicationTester($application);
+        $tester->run(array('command' => 'foo', 'extra' => 'foo'));
+
+        $this->assertEquals('foo', $tester->getInput()->getArgument('extra'));
+    }
+
+    public function testSetArgumentFromConsoleCommandEvent()
+    {
+        $dispatcher = $this->getDispatcher();
+        $dispatcher->addListener('console.command', function (ConsoleCommandEvent $event) {
+            $event->getInput()->setOption('extra', 'overridden');
+        });
+
+        $application = new Application();
+        $application->setDispatcher($dispatcher);
+        $application->setAutoExit(false);
+
+        $application
+            ->register('foo')
+            ->addOption('extra', null, InputOption::VALUE_REQUIRED)
+            ->setCode(function (InputInterface $input, OutputInterface $output) {
+                $output->write('foo.');
+            })
+        ;
+
+        $tester = new ApplicationTester($application);
+        $tester->run(array('command' => 'foo', '--extra' => 'original'));
+
+        $this->assertEquals('overridden', $tester->getInput()->getOption('extra'));
+    }
+
+    public function testAddAndSetArgumentFromConsoleCommandEvent()
+    {
+        $dispatcher = $this->getDispatcher();
+        $dispatcher->addListener('console.command', function (ConsoleCommandEvent $event) {
+            $event->getCommand()->addArgument('extra', InputArgument::REQUIRED);
+            $event->getInput()->setArgument('extra', 'overridden');
+        });
+
+        $application = new Application();
+        $application->setDispatcher($dispatcher);
+        $application->setAutoExit(false);
+
+        $application
+            ->register('foo')
+            ->addOption('extra', null, InputOption::VALUE_REQUIRED)
+            ->setCode(function (InputInterface $input, OutputInterface $output) {
+                $output->write('foo.');
+            })
+        ;
+
+        $tester = new ApplicationTester($application);
+        $tester->run(array('command' => 'foo'));
+
+        $this->assertSame('overridden', $tester->getInput()->getArgument('extra'));
     }
 }
 

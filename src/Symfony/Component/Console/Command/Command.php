@@ -653,7 +653,15 @@ class Command
     }
 
     /**
-     * @internal
+     * Marks the input as bound/not bound.
+     *
+     * Note: passing false to this method prevents the input to be bound when running the command,
+     *       that is useful when input arguments/options values have been set beforehand, from the
+     *       console.command event for instance.
+     *
+     * @param bool $inputBound
+     *
+     * @final since version 3.3
      */
     public function setInputBound($inputBound)
     {
