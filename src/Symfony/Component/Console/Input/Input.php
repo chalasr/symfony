@@ -52,11 +52,22 @@ abstract class Input implements InputInterface
      */
     public function bind(InputDefinition $definition)
     {
+        $arguments = $this->arguments;
+        $options = $this->options;
+
         $this->arguments = array();
         $this->options = array();
         $this->definition = $definition;
 
         $this->parse();
+
+        if ($arguments) {
+            $this->arguments = array_merge($this->arguments, $arguments);
+        }
+
+        if ($options) {
+            $this->options = array_merge($this->options, $options);
+        }
     }
 
     /**

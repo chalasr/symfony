@@ -130,4 +130,11 @@ class InputTest extends TestCase
         $input->setInteractive(false);
         $this->assertFalse($input->isInteractive(), '->setInteractive() changes the interactive flag');
     }
+
+    public function testBindPreservesExistingInput()
+    {
+        $input = new ArrayInput(array('name' => 'foo'));
+        $input->bind(new InputDefinition(array(new InputArgument('name', InputArgument::REQUIRED))));
+        $this->assertSame('foo', $input->getArgument('name'));
+    }
 }
