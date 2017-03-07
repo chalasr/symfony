@@ -23,7 +23,7 @@ class HttpKernelRuntime
 {
     private $handler;
 
-    public function __construct(FragmentHandler $handler)
+    public function __construct(FragmentHandler $handler = null)
     {
         $this->handler = $handler;
     }
@@ -40,6 +40,10 @@ class HttpKernelRuntime
      */
     public function renderFragment($uri, $options = array())
     {
+        if (null === $this->handler) {
+            throw new \RuntimeException(sprintf('A fragment handler must be passed to the %s constructor for using %s(). Did you forget to configure the "framework.fragments" option?', __CLASS__, __METHOD__));
+        }
+
         $strategy = isset($options['strategy']) ? $options['strategy'] : 'inline';
         unset($options['strategy']);
 
@@ -59,6 +63,10 @@ class HttpKernelRuntime
      */
     public function renderFragmentStrategy($strategy, $uri, $options = array())
     {
+        if (null === $this->handler) {
+            throw new \RuntimeException(sprintf('A fragment handler must be passed to the %s constructor for using %s(). Did you forget to configure the "framework.fragments" option?', __CLASS__, __METHOD__));
+        }
+
         return $this->handler->render($uri, $strategy, $options);
     }
 }

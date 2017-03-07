@@ -39,7 +39,7 @@
 
         <service id="templating.helper.actions" class="Symfony\Bundle\FrameworkBundle\Templating\Helper\ActionsHelper">
             <tag name="templating.helper" alias="actions" />
-            <argument type="service" id="fragment.handler" />
+            <argument type="service" id="fragment.handler" on-invalid="null" />
         </service>
 
         <service id="templating.helper.code" class="Symfony\Bundle\FrameworkBundle\Templating\Helper\CodeHelper">

@@ -165,6 +165,9 @@ FrameworkBundle
  * The `Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\RoutingResolverPass` 
    class has been deprecated and will be removed in 4.0. Use the 
    `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass` class instead.
+   
+ * Fragments related services are not loaded anymore when the `framework.fragments` option
+   is disabled.
 
 HttpKernel
 -----------

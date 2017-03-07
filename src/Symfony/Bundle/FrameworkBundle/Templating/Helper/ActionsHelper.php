@@ -29,7 +29,7 @@ class ActionsHelper extends Helper
      *
      * @param FragmentHandler $handler A FragmentHandler instance
      */
-    public function __construct(FragmentHandler $handler)
+    public function __construct(FragmentHandler $handler = null)
     {
         $this->handler = $handler;
     }
@@ -46,6 +46,10 @@ class ActionsHelper extends Helper
      */
     public function render($uri, array $options = array())
     {
+        if (null === $this->handler) {
+            throw new \RuntimeException(sprintf('A fragment handler must be passed to the %s constructor for using %s(). Did you forget to configure the "framework.fragments" option?', __CLASS__, __METHOD__));
+        }
+
         $strategy = isset($options['strategy']) ? $options['strategy'] : 'inline';
         unset($options['strategy']);
 

@@ -30,6 +30,8 @@ CHANGELOG
  * Deprecated `ControllerArgumentValueResolverPass`. Use
    `Symfony\Component\HttpKernel\DependencyInjection\ControllerArgumentValueResolverPass` instead
  * Deprecated `RoutingResolverPass`, use `Symfony\Component\Routing\DependencyInjection\RoutingResolverPass` instead
+ * Fragments related services are not loaded anymore when the `framework.fragments` option
+   is disabled
 
 3.2.0
 -----

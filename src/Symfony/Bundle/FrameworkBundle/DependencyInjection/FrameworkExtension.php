@@ -51,6 +51,7 @@ class FrameworkExtension extends Extension
     private $translationConfigEnabled = false;
     private $sessionConfigEnabled = false;
     private $annotationsConfigEnabled = false;
+    private $fragmentConfigEnabled = false;
 
     /**
      * @var string|null
@@ -78,8 +79,6 @@ class FrameworkExtension extends Extension
             // Ignore deprecation for PHP versions below 7.0
             $definition->setDeprecated(false);
         }
-
-        $loader->load('fragment_renderer.xml');
 
         if (class_exists(Application::class)) {
             $loader->load('console.xml');
@@ -173,14 +172,6 @@ class FrameworkExtension extends Extension
             $this->registerAssetsConfiguration($config['assets'], $container, $loader);
         }
 
-        if ($this->isConfigEnabled($container, $config['templating'])) {
-            if (!class_exists('Symfony\Component\Templating\PhpEngine')) {
-                throw new LogicException('Templating support cannot be enabled as the Templating component is not installed.');
-            }
-
-            $this->registerTemplatingConfiguration($config['templating'], $container, $loader);
-        }
-
         $this->registerValidationConfiguration($config['validation'], $container, $loader);
         $this->registerEsiConfiguration($config['esi'], $container, $loader);
         $this->registerSsiConfiguration($config['ssi'], $container, $loader);
@@ -190,6 +181,14 @@ class FrameworkExtension extends Extension
         $this->registerCacheConfiguration($config['cache'], $container);
         $this->registerWorkflowConfiguration($config['workflows'], $container, $loader);
         $this->registerDebugConfiguration($config['php_errors'], $container, $loader);
+
+        if ($this->isConfigEnabled($container, $config['templating'])) {
+            if (!class_exists('Symfony\Component\Templating\PhpEngine')) {
+                throw new LogicException('Templating support cannot be enabled as the Templating component is not installed.');
+            }
+
+            $this->registerTemplatingConfiguration($config['templating'], $container, $loader);
+        }
 
         if ($this->isConfigEnabled($container, $config['router'])) {
             $this->registerRouterConfiguration($config['router'], $container, $loader);
@@ -335,8 +334,10 @@ class FrameworkExtension extends Extension
             return;
         }
 
+        $loader->load('fragment_renderer.xml');
         $loader->load('fragment_listener.xml');
         $container->setParameter('fragment.path', $config['path']);
+        $this->fragmentConfigEnabled = true;
     }
 
     /**
@@ -652,8 +653,6 @@ class FrameworkExtension extends Extension
     {
         $loader->load('templating.xml');
 
-        $container->setParameter('fragment.renderer.hinclude.global_template', $config['hinclude_default_template']);
-
         if ($container->getParameter('kernel.debug')) {
             $logger = new Reference('logger', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
 
@@ -709,10 +708,13 @@ class FrameworkExtension extends Extension
             $container->setAlias('templating', 'templating.engine.delegating');
         }
 
-        $container->getDefinition('fragment.renderer.hinclude')
-            ->addTag('kernel.fragment_renderer', array('alias' => 'hinclude'))
-            ->replaceArgument(0, new Reference('templating'))
-        ;
+        if ($this->fragmentConfigEnabled) {
+            $container->setParameter('fragment.renderer.hinclude.global_template', $config['hinclude_default_template']);
+            $container->getDefinition('fragment.renderer.hinclude')
+                ->addTag('kernel.fragment_renderer', array('alias' => 'hinclude'))
+                ->replaceArgument(0, new Reference('templating'))
+            ;
+        }
 
         // configure the PHP engine if needed
         if (in_array('php', $config['engines'], true)) {

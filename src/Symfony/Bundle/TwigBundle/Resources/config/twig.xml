@@ -96,7 +96,7 @@
         <service id="twig.extension.httpkernel" class="Symfony\Bridge\Twig\Extension\HttpKernelExtension" public="false" />
 
         <service id="twig.runtime.httpkernel" class="Symfony\Bridge\Twig\Extension\HttpKernelRuntime">
-            <argument type="service" id="fragment.handler" />
+            <argument type="service" id="fragment.handler" on-invalid="null" />
             <tag name="twig.runtime" />
         </service>
 
