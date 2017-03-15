@@ -123,7 +123,7 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
                     $instance['event'] = array($instance['event']);
 
                     if (isset($instance['lazy']) && $instance['lazy']) {
-                        $this->container->getDefinition($id)->setPublic(true);
+                        @trigger_error(sprintf('Setting the "lazy" attribute on a "%1$s.event_listener" tag (as for service "%2$s") is deprecated since version 3.3, all "%1$s.event_listener" tagged services are lazily loaded by the event manager in 4.0.', $this->tagPrefix, $id), E_USER_DEPRECATED);
                     }
                 }
 

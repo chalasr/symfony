@@ -105,6 +105,8 @@ class ContainerAwareEventManager extends EventManager
                 throw new \RuntimeException('Adding lazy-loading listeners after construction is not supported.');
             }
 
+            @trigger_error(sprintf(), E_USER_DEPRECATED)
+
             $hash = '_service_'.$listener;
         } else {
             // Picks the hash code related to that listener
