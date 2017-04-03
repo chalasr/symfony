@@ -39,6 +39,7 @@ class ApplicationTest extends TestCase
     {
         self::$fixturesPath = realpath(__DIR__.'/Fixtures/');
         require_once self::$fixturesPath.'/FooCommand.php';
+        require_once self::$fixturesPath.'/FooOptCommand.php';
         require_once self::$fixturesPath.'/Foo1Command.php';
         require_once self::$fixturesPath.'/Foo2Command.php';
         require_once self::$fixturesPath.'/Foo3Command.php';
@@ -1116,12 +1117,11 @@ class ApplicationTest extends TestCase
     public function testSetRunCustomDefaultCommand()
     {
         $command = new \FooCommand();
-
         $application = new Application();
         $application->setAutoExit(false);
         $application->add($command);
         $application->setDefaultCommand($command->getName());
-
+        putenv('SHELL_INTERACTIVE=1');
         $tester = new ApplicationTester($application);
         $tester->run(array());
         $this->assertEquals('interact called'.PHP_EOL.'called'.PHP_EOL, $tester->getDisplay(), 'Application runs the default set command if different from \'list\' command');
@@ -1133,6 +1133,23 @@ class ApplicationTest extends TestCase
         $tester->run(array());
 
         $this->assertEquals('interact called'.PHP_EOL.'called'.PHP_EOL, $tester->getDisplay(), 'Application runs the default set command if different from \'list\' command');
+        putenv('SHELL_INTERACTIVE=');
+    }
+
+    public function testSetRunCustomDefaultCommandWithOption()
+    {
+        $command = new \FooOptCommand();
+        putenv('SHELL_INTERACTIVE=1');
+
+        $application = new Application();
+        $application->setAutoExit(false);
+        $application->add($command);
+        $application->setDefaultCommand($command->getName());
+        $tester = new ApplicationTester($application);
+        $tester->run(array('--fooopt' => 'opt'));
+
+        $this->assertEquals('interact called'.PHP_EOL.'called'.PHP_EOL.'opt'.PHP_EOL, $tester->getDisplay(), 'Application runs the default set command if different from \'list\' command');
+        putenv('SHELL_INTERACTIVE=');
     }
 
     /**
