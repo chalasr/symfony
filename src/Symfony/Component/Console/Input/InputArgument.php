@@ -107,6 +107,16 @@ class InputArgument
     }
 
     /**
+     * Sets argument's mode.
+     *
+     * @param int $mode
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+    }
+
+    /**
      * Returns the default value.
      *
      * @return mixed The default value

@@ -179,7 +179,9 @@ class Application
 
         if (!$name) {
             $name = $this->defaultCommand;
-            $input = new ArrayInput(array('command' => $this->defaultCommand));
+            $inputArgument = $this->definition->getArgument('command');
+            $inputArgument->setMode(InputArgument::OPTIONAL);
+            $inputArgument->setDefault($name);
         }
 
         // the command name MUST be the first element of the input
