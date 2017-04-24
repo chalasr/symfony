@@ -99,24 +99,24 @@ class HttpUtils
      */
     public function checkRequestPath(Request $request, $path)
     {
-        if ('/' !== $path[0]) {
-            try {
-                // matching a request is more powerful than matching a URL path + context, so try that first
-                if ($this->urlMatcher instanceof RequestMatcherInterface) {
-                    $parameters = $this->urlMatcher->matchRequest($request);
-                } else {
-                    $parameters = $this->urlMatcher->match($request->getPathInfo());
-                }
-
-                return $path === $parameters['_route'];
-            } catch (MethodNotAllowedException $e) {
-                return false;
-            } catch (ResourceNotFoundException $e) {
-                return false;
-            }
+        if (!$this->urlMatcher) {
+            return $path === rawurldecode($request->getPathInfo());
         }
 
-        return $path === rawurldecode($request->getPathInfo());
+        try {
+            // matching a request is more powerful than matching a URL path + context, so try that first
+            if ($this->urlMatcher instanceof RequestMatcherInterface) {
+                $parameters = $this->urlMatcher->matchRequest($request);
+            } else {
+                $parameters = $this->urlMatcher->match($request->getPathInfo());
+            }
+
+            return $path === $parameters['_route'];
+        } catch (MethodNotAllowedException $e) {
+            return false;
+        } catch (ResourceNotFoundException $e) {
+            return false;
+        }
     }
 
     /**
