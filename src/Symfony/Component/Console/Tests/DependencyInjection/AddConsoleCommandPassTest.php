@@ -12,18 +12,23 @@
 namespace Symfony\Component\Console\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\TypedReference;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class AddConsoleCommandPassTest extends TestCase
 {
     /**
+     * @group legacy
+     * @expectedDeprecation The "console.command" tag requires a "command" attribute with the command name as value since version 3.4, omitting it (as for service "my-command") is deprecated and will throw an exception in 4.0.
      * @dataProvider visibilityProvider
      */
-    public function testProcess($public)
+    public function testLegacyProcess($public)
     {
         $container = new ContainerBuilder();
         $container->addCompilerPass(new AddConsoleCommandPass());
@@ -53,6 +58,27 @@ class AddConsoleCommandPassTest extends TestCase
         $this->assertSame(array($alias => $id), $container->getParameter('console.command.ids'));
     }
 
+    public function testProcess()
+    {
+        $container = new ContainerBuilder();
+        $container
+            ->register('my-command', MyCommand::class)
+            ->setPublic(false)
+            ->addTag('console.command', array('command' => 'my:command', 'alias' => 'my:alias'))
+        ;
+
+        (new AddConsoleCommandPass())->process($container);
+
+        $commandLoader = $container->getDefinition('console.command_loader');
+        $commandLocator = $container->getDefinition($commandLoader->getArgument(0));
+        $expectedClosure = new ServiceClosureArgument(new TypedReference('my-command', MyCommand::class));
+
+        $this->assertSame(ContainerCommandLoader::class, $commandLoader->getClass());
+        $this->assertSame(array('my:command', 'my:alias'), $commandLoader->getArgument(1));
+        $this->assertEquals(array(array('my:command' => $expectedClosure, 'my:alias' => $expectedClosure)), $commandLocator->getArguments());
+        $this->assertSame(array('console.command.symfony_component_console_tests_dependencyinjection_mycommand' => false), $container->getParameter('console.command.ids'));
+    }
+
     public function visibilityProvider()
     {
         return array(
@@ -72,7 +98,7 @@ class AddConsoleCommandPassTest extends TestCase
         $container->addCompilerPass(new AddConsoleCommandPass());
 
         $definition = new Definition('Symfony\Component\Console\Tests\DependencyInjection\MyCommand');
-        $definition->addTag('console.command');
+        $definition->addTag('console.command', array('command' => 'my:command'));
         $definition->setAbstract(true);
         $container->setDefinition('my-command', $definition);
 
@@ -90,12 +116,17 @@ class AddConsoleCommandPassTest extends TestCase
         $container->addCompilerPass(new AddConsoleCommandPass());
 
         $definition = new Definition('SplObjectStorage');
-        $definition->addTag('console.command');
+        $definition->addTag('console.command', array('command' => 'my:command'));
         $container->setDefinition('my-command', $definition);
 
         $container->compile();
     }
 
+    /**
+     * @group legacy
+     * @expectedDeprecation The "console.command" tag requires a "command" attribute with the command name as value since version 3.4, omitting it (as for service "my-command1") is deprecated and will throw an exception in 4.0.
+     * @expectedDeprecation The "console.command" tag requires a "command" attribute with the command name as value since version 3.4, omitting it (as for service "my-command2") is deprecated and will throw an exception in 4.0.
+     */
     public function testProcessPrivateServicesWithSameCommand()
     {
         $container = new ContainerBuilder();

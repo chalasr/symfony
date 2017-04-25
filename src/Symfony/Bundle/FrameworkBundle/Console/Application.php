@@ -67,15 +67,7 @@ class Application extends BaseApplication
     {
         $this->kernel->boot();
 
-        $container = $this->kernel->getContainer();
-
-        foreach ($this->all() as $command) {
-            if ($command instanceof ContainerAwareInterface) {
-                $command->setContainer($container);
-            }
-        }
-
-        $this->setDispatcher($container->get('event_dispatcher'));
+        $this->setDispatcher($this->kernel->getContainer()->get('event_dispatcher'));
 
         return parent::doRun($input, $output);
     }
@@ -97,7 +89,13 @@ class Application extends BaseApplication
     {
         $this->registerCommands();
 
-        return parent::get($name);
+        $command = parent::get($name);
+
+        if ($command instanceof ContainerAwareInterface) {
+            $command->setContainer($this->kernel->getContainer());
+        }
+
+        return $command;
     }
 
     /**
@@ -136,9 +134,16 @@ class Application extends BaseApplication
             }
         }
 
+        if ($container->has('console.command_loader')) {
+            $this->setCommandLoader($container->get('console.command_loader'));
+        }
+
+        // @deprecated since version 3.4, to be removed in 4.0
         if ($container->hasParameter('console.command.ids')) {
             foreach ($container->getParameter('console.command.ids') as $id) {
-                $this->add($container->get($id));
+                if (false !== $id) {
+                    $this->add($container->get($id));
+                }
             }
         }
     }
