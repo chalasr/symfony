@@ -481,6 +481,19 @@ class Application
         return isset($this->commands[$name]);
     }
 
+    public function remove($name)
+    {
+        $command = $this->find($name);
+
+        foreach ($command->getAliases() as $alias) {
+            if (isset($this->commands[$alias])) {
+                unset($this->commands[$alias]);
+            }
+        }
+
+        unset($this->commands[$command->getName()]);
+    }
+
     /**
      * Returns an array of all unique namespaces used by currently registered commands.
      *
