@@ -68,6 +68,7 @@ class PhpDumper extends Dumper
     private $serviceIdToMethodNameMap;
     private $usedMethodNames;
     private $baseClass;
+    private $serviceProxies = array();
 
     /**
      * @var \Symfony\Component\DependencyInjection\LazyProxy\PhpDumper\DumperInterface
@@ -270,6 +271,13 @@ class PhpDumper extends Dumper
                 $proxyCode = substr(Kernel::stripComments($proxyCode), 5);
             }
             $code .= $proxyCode;
+        }
+
+        foreach ($this->serviceProxies as $proxyCode) {
+            if ($strip) {
+                $proxyCode = substr(Kernel::stripComments("<?php\n".$proxyCode), 5);
+            }
+            $code .= "\n".$proxyCode;
         }
 
         return $code;
@@ -795,6 +803,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
+use Symfony\Component\DependencyInjection\ServiceProxy;
 $bagClass
 
 /*{$this->docStar}
@@ -1424,16 +1433,7 @@ EOF;
 
             try {
                 if ($value instanceof ServiceClosureArgument) {
-                    $value = $value->getValues()[0];
-                    $code = $this->dumpValue($value, $interpolate);
-
-                    if ($value instanceof TypedReference) {
-                        $code = sprintf('$f = function (\\%s $v%s) { return $v; }; return $f(%s);', $value->getType(), ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE !== $value->getInvalidBehavior() ? ' = null' : '', $code);
-                    } else {
-                        $code = sprintf('return %s;', $code);
-                    }
-
-                    return sprintf("function () {\n            %s\n        }", $code);
+                    return $this->dumpServiceClosure($value->getValues()[0], $interpolate);
                 }
 
                 if ($value instanceof IteratorArgument) {
@@ -1487,11 +1487,19 @@ EOF;
                     if (!$r->isPublic()) {
                         throw new InvalidArgumentException(sprintf('Cannot create closure-proxy for service "%s": method "%s::%s" must be public.', $reference, $class, $method));
                     }
+
                     $signature = preg_replace('/^(&?)[^(]*/', '$1', ProxyHelper::getSignature($r, $call));
+                    $return = 'void' !== ProxyHelper::getTypeHint($r) ? 'return ' : '';
+                    $invoke = sprintf("public function __invoke%s \n    {\n        %s\$this->getService()->%s%s;\n    }", $signature, $return, $method, $call);
 
-                    $return = 'void' !== ProxyHelper::getTypeHint($r);
+                    if (70000 > PHP_VERSION_ID) {
+                        $proxyClass = sprintf('%s%sServiceProxy_%s', str_replace('\\', '', $class), $method, spl_object_hash($value));
+                        $this->serviceProxies[$proxyClass] = sprintf("class %s extends ServiceProxy \n{\n    $invoke\n}\n", $proxyClass, $signature, $return, $method, $call);
 
-                    return sprintf("/** @closure-proxy %s::%s */ function %s {\n            %s%s->%s;\n        }", $class, $method, $signature, $return ? 'return ' : '', $this->dumpValue($reference), $call);
+                        return sprintf('new %s(%s, \'%s\', \'%s\')', $proxyClass, $this->dumpServiceClosure($reference, $interpolate), $class, $method);
+                    }
+
+                    return sprintf("new class extends ServiceProxy(%s, \'%s\', \'%s\') {\n    $invoke\n}", $this->dumpServiceClosure($reference, $interpolate), $class, $method);
                 }
             } finally {
                 list($this->definitionVariables, $this->referenceVariables, $this->variableCount) = $scope;
@@ -1807,5 +1815,18 @@ EOF;
         }
 
         return $export;
+    }
+
+    private function dumpServiceClosure($value, $interpolate = true)
+    {
+        $code = $this->dumpValue($value, $interpolate);
+
+        if ($value instanceof TypedReference) {
+            $code = sprintf('$f = function (\\%s $v%s) { return $v; }; return $f(%s);', $value->getType(), ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE !== $value->getInvalidBehavior() ? ' = null' : '', $code);
+        } else {
+            $code = sprintf('return %s;', $code);
+        }
+
+        return sprintf("function () {\n            %s\n        }", $code);
     }
 }
