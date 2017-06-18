@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -531,7 +532,13 @@ class FrameworkExtension extends Extension
         ));
 
         $container->setParameter('templating.engines', $config['engines']);
-        $engines = array_map(function ($engine) { return new Reference('templating.engine.'.$engine); }, $config['engines']);
+        $engines = array();
+        foreach ($config['engines'] as $engine) {
+            if ('twig' === $engine && !isset($container->getParameter('kernel.bundles')['TwigBundle'])) {
+                throw new InvalidArgumentException('TwigBundle must be registered for using "twig" as template engine.');
+            }
+            $engines[] = new Reference('templating.engine.'.$engine);
+        }
 
         // Use a delegation unless only a single engine was registered
         if (1 === count($engines)) {
