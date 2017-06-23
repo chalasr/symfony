@@ -83,12 +83,7 @@ class Translator implements TranslatorInterface
         ;
     }
 
-    /**
-     * @param string $element
-     *
-     * @return string
-     */
-    public static function getXpathLiteral($element)
+    public static function getXpathLiteral(string $element): string
     {
         if (false === strpos($element, "'")) {
             return "'".$element."'";
@@ -141,14 +136,7 @@ class Translator implements TranslatorInterface
         return ($prefix ?: '').$this->nodeToXPath($selector);
     }
 
-    /**
-     * Registers an extension.
-     *
-     * @param Extension\ExtensionInterface $extension
-     *
-     * @return $this
-     */
-    public function registerExtension(Extension\ExtensionInterface $extension)
+    public function registerExtension(Extension\ExtensionInterface $extension): Translator
     {
         $this->extensions[$extension->getName()] = $extension;
 
@@ -161,14 +149,7 @@ class Translator implements TranslatorInterface
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return Extension\ExtensionInterface
-     *
-     * @throws ExpressionErrorException
-     */
-    public function getExtension($name)
+    public function getExtension(string $name): Extension\ExtensionInterface
     {
         if (!isset($this->extensions[$name])) {
             throw new ExpressionErrorException(sprintf('Extension "%s" not registered.', $name));
@@ -177,28 +158,14 @@ class Translator implements TranslatorInterface
         return $this->extensions[$name];
     }
 
-    /**
-     * Registers a shortcut parser.
-     *
-     * @param ParserInterface $shortcut
-     *
-     * @return $this
-     */
-    public function registerParserShortcut(ParserInterface $shortcut)
+    public function registerParserShortcut(ParserInterface $shortcut): Translator
     {
         $this->shortcutParsers[] = $shortcut;
 
         return $this;
     }
 
-    /**
-     * @param NodeInterface $node
-     *
-     * @return XPathExpr
-     *
-     * @throws ExpressionErrorException
-     */
-    public function nodeToXPath(NodeInterface $node)
+    public function nodeToXPath(NodeInterface $node): XPathExpr
     {
         if (!isset($this->nodeTranslators[$node->getNodeName()])) {
             throw new ExpressionErrorException(sprintf('Node "%s" not supported.', $node->getNodeName()));
@@ -207,16 +174,7 @@ class Translator implements TranslatorInterface
         return call_user_func($this->nodeTranslators[$node->getNodeName()], $node, $this);
     }
 
-    /**
-     * @param string        $combiner
-     * @param NodeInterface $xpath
-     * @param NodeInterface $combinedXpath
-     *
-     * @return XPathExpr
-     *
-     * @throws ExpressionErrorException
-     */
-    public function addCombination($combiner, NodeInterface $xpath, NodeInterface $combinedXpath)
+    public function addCombination(string $combiner, NodeInterface $xpath, NodeInterface $combinedXpath): XPathExpr
     {
         if (!isset($this->combinationTranslators[$combiner])) {
             throw new ExpressionErrorException(sprintf('Combiner "%s" not supported.', $combiner));
@@ -225,15 +183,7 @@ class Translator implements TranslatorInterface
         return call_user_func($this->combinationTranslators[$combiner], $this->nodeToXPath($xpath), $this->nodeToXPath($combinedXpath));
     }
 
-    /**
-     * @param XPathExpr    $xpath
-     * @param FunctionNode $function
-     *
-     * @return XPathExpr
-     *
-     * @throws ExpressionErrorException
-     */
-    public function addFunction(XPathExpr $xpath, FunctionNode $function)
+    public function addFunction(XPathExpr $xpath, FunctionNode $function): XPathExpr
     {
         if (!isset($this->functionTranslators[$function->getName()])) {
             throw new ExpressionErrorException(sprintf('Function "%s" not supported.', $function->getName()));
@@ -242,15 +192,7 @@ class Translator implements TranslatorInterface
         return call_user_func($this->functionTranslators[$function->getName()], $xpath, $function);
     }
 
-    /**
-     * @param XPathExpr $xpath
-     * @param string    $pseudoClass
-     *
-     * @return XPathExpr
-     *
-     * @throws ExpressionErrorException
-     */
-    public function addPseudoClass(XPathExpr $xpath, $pseudoClass)
+    public function addPseudoClass(XPathExpr $xpath, string $pseudoClass): XPathExpr
     {
         if (!isset($this->pseudoClassTranslators[$pseudoClass])) {
             throw new ExpressionErrorException(sprintf('Pseudo-class "%s" not supported.', $pseudoClass));
@@ -259,17 +201,7 @@ class Translator implements TranslatorInterface
         return call_user_func($this->pseudoClassTranslators[$pseudoClass], $xpath);
     }
 
-    /**
-     * @param XPathExpr $xpath
-     * @param string    $operator
-     * @param string    $attribute
-     * @param string    $value
-     *
-     * @return XPathExpr
-     *
-     * @throws ExpressionErrorException
-     */
-    public function addAttributeMatching(XPathExpr $xpath, $operator, $attribute, $value)
+    public function addAttributeMatching(XPathExpr $xpath, string $operator, string $attribute, $value): XPathExpr
     {
         if (!isset($this->attributeMatchingTranslators[$operator])) {
             throw new ExpressionErrorException(sprintf('Attribute matcher operator "%s" not supported.', $operator));

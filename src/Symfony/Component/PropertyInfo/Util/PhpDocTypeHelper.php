@@ -27,9 +27,9 @@ final class PhpDocTypeHelper
     /**
      * Creates a {@see Type} from a PHPDoc type.
      *
-     * @return Type
+     * @return Type[]
      */
-    public function getTypes(DocType $varType)
+    public function getTypes(DocType $varType): iterable
     {
         $types = array();
         $nullable = false;
@@ -79,11 +79,11 @@ final class PhpDocTypeHelper
      *
      * @return Type|null
      */
-    private function createType($docType, $nullable)
+    private function createType($docType, $nullable): ?Type
     {
         // Cannot guess
         if (!$docType || 'mixed' === $docType) {
-            return;
+            return null;
         }
 
         if ($collection = '[]' === substr($docType, -2)) {
