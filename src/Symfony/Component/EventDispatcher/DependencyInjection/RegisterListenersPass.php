@@ -56,6 +56,8 @@ class RegisterListenersPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->dispatcherService) && !$container->hasAlias($this->dispatcherService)) {
+            $container->log($this, sprintf('Service "%s" does not exist, skipping.', $this->dispatcherService));
+
             return;
         }
 

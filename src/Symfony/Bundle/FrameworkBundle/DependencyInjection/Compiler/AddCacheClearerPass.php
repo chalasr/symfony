@@ -28,6 +28,8 @@ class AddCacheClearerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('cache_clearer')) {
+            $container->log($this, 'Service "cache_clearer" does not exist, skipping.');
+
             return;
         }
 

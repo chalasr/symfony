@@ -33,6 +33,8 @@ class FormPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('form.extension')) {
+            $container->log($this, 'Service "form.extension" does not exist, skipping.');
+
             return;
         }
 

@@ -33,6 +33,8 @@ class AddSecurityVotersPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('security.access.decision_manager')) {
+            $container->log($this, 'Service "security.access.decision_manager" does not exist, skipping.');
+
             return;
         }
 

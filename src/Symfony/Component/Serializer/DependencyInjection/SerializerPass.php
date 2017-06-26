@@ -41,6 +41,8 @@ class SerializerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->serializerService)) {
+            $container->log($this, sprintf('Service "%s" does not exist, skipping.', $this->serializerService));
+
             return;
         }
 

@@ -22,6 +22,8 @@ class TemplatingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if ($container->hasDefinition('templating')) {
+            $container->log($this, sprintf('Service "templating" does not exist, skipping.'));
+
             return;
         }
 

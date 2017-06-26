@@ -34,6 +34,8 @@ class AddConstraintValidatorsPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->validatorFactoryServiceId)) {
+            $container->log($this, sprintf('Service "%s" does not exist, skipping.', $this->validatorFactoryServiceId));
+
             return;
         }
 

@@ -37,6 +37,8 @@ class RoutingResolverPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (false === $container->hasDefinition($this->resolverServiceId)) {
+            $container->log($this, sprintf('Service "%s" does not exist, skipping.', $this->resolverServiceId));
+
             return;
         }
 

@@ -20,12 +20,18 @@ class AddDebugLogProcessorPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('profiler')) {
+            $container->log($this, 'Service "profiler" does not exist, skipping.');
+
             return;
         }
         if (!$container->hasDefinition('monolog.logger_prototype')) {
+            $container->log($this, 'Service "monolog.logger_type" does not exist, skipping.');
+
             return;
         }
         if (!$container->hasDefinition('debug.log_processor')) {
+            $container->log($this, 'Service "debug.log_processor" does not exist, skipping.');
+
             return;
         }
 

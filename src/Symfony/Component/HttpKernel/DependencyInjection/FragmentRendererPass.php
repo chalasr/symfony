@@ -41,6 +41,8 @@ class FragmentRendererPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->handlerService)) {
+            $container->log($this, sprintf('Service "%s" does not exist, skipping.', $this->handlerService));
+
             return;
         }
 
