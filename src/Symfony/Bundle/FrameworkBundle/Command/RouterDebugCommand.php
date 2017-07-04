@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Helper\DescriptorHelper;
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,6 +29,15 @@ use Symfony\Component\Routing\Route;
  */
 class RouterDebugCommand extends ContainerAwareCommand
 {
+    private $controllerNameParser;
+
+    public function __construct(ControllerNameParser $controllerNameParser)
+    {
+        parent::__construct();
+
+        $this->controllerNameParser = $controllerNameParser;
+    }
+
     /**
      * {@inheritdoc}
      */

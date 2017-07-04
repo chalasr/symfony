@@ -12,9 +12,11 @@
 namespace Symfony\Bundle\FrameworkBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Command\RouterDebugCommand;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -53,7 +55,7 @@ class RouterDebugCommandTest extends TestCase
     {
         $application = new Application();
 
-        $command = new RouterDebugCommand();
+        $command = new RouterDebugCommand(new ControllerNameParser($this->getMockBuilder(KernelInterface::class)->getMock()));
         $command->setContainer($this->getContainer());
         $application->add($command);
 
