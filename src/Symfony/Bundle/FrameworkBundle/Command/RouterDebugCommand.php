@@ -12,7 +12,6 @@
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Helper\DescriptorHelper;
-use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -110,7 +109,7 @@ EOF
 
     private function convertController(Route $route)
     {
-        $nameParser = new ControllerNameParser($this->getApplication()->getKernel());
+        $nameParser = $this->getContainer()->get('controller_name_converter');
         if ($route->hasDefault('_controller')) {
             try {
                 $route->setDefault('_controller', $nameParser->build($route->getDefault('_controller')));
