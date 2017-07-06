@@ -130,8 +130,8 @@ class ApplicationTest extends TestCase
         $this->assertCount(1, $commands, '->all() takes a namespace as its first argument');
 
         $application->setCommandLoader(new ContainerCommandLoader(
-            new ServiceLocator(array('foo:bar1' => function () { return new \Foo1Command(); })),
-            array('foo:bar1')
+            new ServiceLocator(array('foo-bar' => function () { return new \Foo1Command(); })),
+            array('foo:bar1' => 'foo-bar')
         ));
         $commands = $application->all('foo');
         $this->assertCount(2, $commands, '->all() takes a namespace as its first argument');

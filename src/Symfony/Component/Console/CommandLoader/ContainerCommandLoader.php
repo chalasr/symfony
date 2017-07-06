@@ -13,12 +13,16 @@ use Symfony\Component\Console\Exception\CommandNotFoundException;
 class ContainerCommandLoader implements CommandLoaderInterface
 {
     private $container;
-    private $names;
+    private $commandMap;
 
-    public function __construct(ContainerInterface $container, array $names)
+    /**
+     * @param ContainerInterface $container  A container from which to load command services
+     * @param array              $commandMap An array with command names as keys and service ids as values
+     */
+    public function __construct(ContainerInterface $container, array $commandMap)
     {
         $this->container = $container;
-        $this->names = $names;
+        $this->commandMap = $commandMap;
     }
 
     /**
@@ -30,7 +34,7 @@ class ContainerCommandLoader implements CommandLoaderInterface
             throw new CommandNotFoundException(sprintf('Command "%s" does not exist.', $name));
         }
 
-        return $this->container->get($name);
+        return $this->container->get($this->commandMap[$name]);
     }
 
     /**
@@ -38,7 +42,7 @@ class ContainerCommandLoader implements CommandLoaderInterface
      */
     public function has($name)
     {
-        return in_array($name, $this->names, true);
+        return isset($this->commandMap[$name]) && $this->container->has($this->commandMap[$name]);
     }
 
     /**
@@ -46,8 +50,8 @@ class ContainerCommandLoader implements CommandLoaderInterface
      */
     public function all()
     {
-        foreach ($this->names as $name) {
-            yield $name => $this->container->get($name);
+        foreach ($this->commandMap as $name => $id) {
+            yield $name => $this->container->get($id);
         }
     }
 
@@ -56,6 +60,6 @@ class ContainerCommandLoader implements CommandLoaderInterface
      */
     public function getNames()
     {
-        return $this->names;
+        return array_keys($this->commandMap);
     }
 }

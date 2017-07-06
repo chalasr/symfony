@@ -38,7 +38,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $commandServices = $container->findTaggedServiceIds($this->commandTag, true);
-        $commandMap = array();
+        $lazyCommandRefMap = array();
         $serviceIds = array();
 
         foreach ($commandServices as $id => $tags) {
@@ -69,7 +69,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
 
             $serviceIds[$commandId] = false;
             $commandName = $tags[0]['command'];
-            $commandMap[$commandName] = $commandRef = new TypedReference($id, $class);
+            $lazyCommandRefMap[$commandName] = $commandRef = new TypedReference($id, $class);
             $aliases = array();
 
             foreach ($tags as $tag) {
@@ -81,7 +81,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
                 }
                 if (isset($tag['alias'])) {
                     $aliases[] = $tag['alias'];
-                    $commandMap[$tag['alias']] = $commandRef;
+                    $lazyCommandRefMap[$tag['alias']] = $commandRef;
                 }
             }
 
@@ -90,9 +90,14 @@ class AddConsoleCommandPass implements CompilerPassInterface
             }
         }
 
+        $commandMap = array();
+        foreach ($lazyCommandRefMap as $name => $ref) {
+            $commandMap[$name] = (string) $ref;
+        }
+
         $container
             ->register($this->commandLoaderServiceId, ContainerCommandLoader::class)
-            ->setArguments(array(ServiceLocatorTagPass::register($container, $commandMap), array_keys($commandMap)));
+            ->setArguments(array(ServiceLocatorTagPass::register($container, $lazyCommandRefMap), $commandMap));
 
         $container->setParameter('console.command.ids', $serviceIds);
     }

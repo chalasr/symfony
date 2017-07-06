@@ -72,7 +72,7 @@ class AddConsoleCommandPassTest extends TestCase
         $expectedClosure = new ServiceClosureArgument(new TypedReference('my-command', MyCommand::class));
 
         $this->assertSame(ContainerCommandLoader::class, $commandLoader->getClass());
-        $this->assertSame(array('my:command', 'my:alias'), $commandLoader->getArgument(1));
+        $this->assertSame(array('my:command' => 'my-command', 'my:alias' => 'my-command'), $commandLoader->getArgument(1));
         $this->assertEquals(array(array('my:command' => $expectedClosure, 'my:alias' => $expectedClosure)), $commandLocator->getArguments());
         $this->assertSame(array('console.command.symfony_component_console_tests_dependencyinjection_mycommand' => false), $container->getParameter('console.command.ids'));
     }
