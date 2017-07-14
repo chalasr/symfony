@@ -270,8 +270,10 @@ class FrameworkExtension extends Extension
         $container->registerForAutoconfiguration(ServiceSubscriberInterface::class)
             ->addTag('container.service_subscriber');
         $container->registerForAutoconfiguration(AbstractController::class)
+            ->setPublic(true)
             ->addTag('controller.service_arguments');
         $container->registerForAutoconfiguration(Controller::class)
+            ->setPublic(true)
             ->addTag('controller.service_arguments');
         $container->registerForAutoconfiguration(DataCollectorInterface::class)
             ->addTag('data_collector');
