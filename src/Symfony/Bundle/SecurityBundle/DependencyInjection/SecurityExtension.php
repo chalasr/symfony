@@ -331,6 +331,8 @@ class SecurityExtension extends Extension
 
             // add cookie logout handler
             if (\count($firewall['logout']['delete_cookies']) > 0) {
+
+
                 $cookieHandlerId = 'security.logout.handler.cookie_clearing.'.$id;
                 $cookieHandler = $container->setDefinition($cookieHandlerId, new ChildDefinition('security.logout.handler.cookie_clearing'));
                 $cookieHandler->addArgument($firewall['logout']['delete_cookies']);

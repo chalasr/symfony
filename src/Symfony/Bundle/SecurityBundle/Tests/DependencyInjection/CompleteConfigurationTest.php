@@ -475,6 +475,12 @@ abstract class CompleteConfigurationTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testCookieClearingName()
+    {
+        $container = $this->getContainer('container1');
+        $this->assertArrayHasKey('cookie-name', $container->getDefinition('security.logout.handler.cookie_clearing.secure')->getArgument(0));
+    }
+
     protected function getContainer($file)
     {
         $file = $file.'.'.$this->getFileExtension();

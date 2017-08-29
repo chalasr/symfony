@@ -1,0 +1,11 @@
+security:
+    providers:
+        default:
+            id: foo
+
+    firewalls:
+        logout_delete_cookies:
+            anonymous: ~
+            logout:
+                delete_cookies:
+                    cookie-name: ~

@@ -217,9 +217,17 @@ class MainConfiguration implements ConfigurationInterface
                 ->fixXmlConfig('delete_cookie')
                 ->children()
                     ->arrayNode('delete_cookies')
+                        ->normalizeKeys(false)
                         ->beforeNormalization()
                             ->ifTrue(function ($v) { return \is_array($v) && \is_int(key($v)); })
-                            ->then(function ($v) { return array_map(function ($v) { return array('name' => $v); }, $v); })
+                            ->then(function ($v) {
+                                foreach ($v as $name => $value) {
+                                    // todo create a copy of the cookie with normalized name and trigger
+                                }
+
+                                // todo merge the previous array with this one before returning it
+                                return array_map(function ($v) { return array('name' => $v); }, $v);
+                            })
                         ->end()
                         ->useAttributeAsKey('name')
                         ->prototype('array')
