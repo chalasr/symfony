@@ -11,9 +11,13 @@
 
 namespace Symfony\Bundle\SecurityBundle\DependencyInjection;
 
+<<<<<<< Updated upstream
 use Symfony\Bundle\SecurityBundle\Command\InitAclCommand;
 use Symfony\Bundle\SecurityBundle\Command\SetAclCommand;
 use Symfony\Bundle\SecurityBundle\Command\UserPasswordEncoderCommand;
+=======
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\HttpDigestFactory;
+>>>>>>> Stashed changes
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -480,7 +484,11 @@ class SecurityExtension extends Extension
         return $this->contextListeners[$contextKey] = $listenerId;
     }
 
+<<<<<<< Updated upstream
     private function createAuthenticationListeners($container, $id, $firewall, &$authenticationProviders, $defaultProvider, array $providerIds, $defaultEntryPoint)
+=======
+    private function createAuthenticationListeners(ContainerBuilder $container, $id, $firewall, &$authenticationProviders, $defaultProvider, $defaultEntryPoint)
+>>>>>>> Stashed changes
     {
         $listeners = array();
         $hasListeners = false;
@@ -504,6 +512,10 @@ class SecurityExtension extends Extension
                     $listeners[] = new Reference($listenerId);
                     $authenticationProviders[] = $provider;
                     $hasListeners = true;
+
+                    if ($factory instanceof HttpDigestFactory) {
+                        $container->addCompilerPass(new CheckDigest)
+                    }
                 }
             }
         }
