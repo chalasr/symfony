@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\SecurityBundle\Command\UserPasswordEncoderCommand;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\Pbkdf2PasswordEncoder;
@@ -65,6 +66,26 @@ class UserPasswordEncoderCommandTest extends WebTestCase
 
         $encoder = new BCryptPasswordEncoder(17);
         preg_match('# Encoded password\s{1,}([\w+\/$.]+={0,2})\s+#', $output, $matches);
+        $hash = $matches[1];
+        $this->assertTrue($encoder->isPasswordValid($hash, 'password', null));
+    }
+
+    public function testEncodePasswordArgon2i()
+    {
+        if (!function_exists('sodium_crypto_pwhash_str') && !extension_loaded('libsodium') && !defined('PASSWORD_ARGON2I')) {
+            $this->markTestSkipped('Argon2i algorithm not available.');
+        }
+        $this->passwordEncoderCommandTester->execute(array(
+            'command' => 'security:encode-password',
+            'password' => 'password',
+            'user-class' => 'Custom\Class\Argon2i\User',
+        ), array('interactive' => false));
+
+        $output = $this->passwordEncoderCommandTester->getDisplay();
+        $this->assertContains('Password encoding succeeded', $output);
+
+        $encoder = new Argon2iPasswordEncoder();
+        preg_match('#  Encoded password\s+(\$argon2i\$[\w\d,=\$+\/]+={0,2})\s+#', $output, $matches);
         $hash = $matches[1];
         $this->assertTrue($encoder->isPasswordValid($hash, 'password', null));
     }
@@ -129,6 +150,20 @@ class UserPasswordEncoderCommandTest extends WebTestCase
         $this->assertNotContains(' Generated salt ', $this->passwordEncoderCommandTester->getDisplay());
     }
 
+    public function testEncodePasswordArgon2iOutput()
+    {
+        if (!function_exists('sodium_crypto_pwhash_str') && !extension_loaded('libsodium') && !defined('PASSWORD_ARGON2I')) {
+            $this->markTestSkipped('Argon2i algorithm not available.');
+        }
+        $this->passwordEncoderCommandTester->execute(array(
+            'command' => 'security:encode-password',
+            'password' => 'p@ssw0rd',
+            'user-class' => 'Custom\Class\Argon2i\User',
+        ), array('interactive' => false));
+
+        $this->assertNotContains(' Generated salt ', $this->passwordEncoderCommandTester->getDisplay());
+    }
+
     public function testEncodePasswordNoConfigForGivenUserClass()
     {
         if (method_exists($this, 'expectException')) {
@@ -154,11 +189,12 @@ class UserPasswordEncoderCommandTest extends WebTestCase
         ), array('decorated' => false));
 
         $this->assertContains(<<<EOTXT
- For which user class would you like to encode a password? [Custom\Class\Bcrypt\User]:
-  [0] Custom\Class\Bcrypt\User
-  [1] Custom\Class\Pbkdf2\User
-  [2] Custom\Class\Test\User
-  [3] Symfony\Component\Security\Core\User\User
+ For which user class would you like to encode a password? [Custom\Class\Argon2i\User]:
+  [0] Custom\Class\Argon2i\User
+  [1] Custom\Class\Bcrypt\User
+  [2] Custom\Class\Pbkdf2\User
+  [3] Custom\Class\Test\User
+  [4] Symfony\Component\Security\Core\User\User
 EOTXT
         , $this->passwordEncoderCommandTester->getDisplay(true));
     }

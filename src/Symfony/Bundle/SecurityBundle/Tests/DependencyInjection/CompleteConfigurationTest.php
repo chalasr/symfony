@@ -448,6 +448,10 @@ abstract class CompleteConfigurationTest extends TestCase
                 'class' => 'Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder',
                 'arguments' => array(15),
             ),
+            'JMS\FooBundle\Entity\User7' => array(
+                'class' => 'Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder',
+                'arguments' => array(),
+            ),
         )), $container->getDefinition('security.encoder_factory.generic')->getArguments());
     }
 

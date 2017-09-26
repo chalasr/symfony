@@ -607,6 +607,14 @@ class SecurityExtension extends Extension
             );
         }
 
+        // Argon2i encoder
+        if ('argon2i' === $config['algorithm']) {
+            return array(
+                'class' => 'Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder',
+                'arguments' => array(),
+            );
+        }
+
         // run-time configured encoder
         return $config;
     }

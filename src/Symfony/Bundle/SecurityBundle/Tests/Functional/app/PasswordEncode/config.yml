@@ -12,6 +12,8 @@ security:
             hash_algorithm:       sha512
             encode_as_base64:     true
             iterations:           1000
+        Custom\Class\Argon2i\User:
+            algorithm: argon2i
         Custom\Class\Test\User: test
 
     providers:

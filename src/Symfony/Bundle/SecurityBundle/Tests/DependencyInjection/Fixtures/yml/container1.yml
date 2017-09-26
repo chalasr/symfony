@@ -18,6 +18,8 @@ security:
         JMS\FooBundle\Entity\User6:
             algorithm: bcrypt
             cost: 15
+        JMS\FooBundle\Entity\User7:
+            algorithm: argon2i
 
     providers:
         default:
