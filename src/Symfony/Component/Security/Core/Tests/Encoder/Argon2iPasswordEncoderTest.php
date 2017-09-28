@@ -21,7 +21,7 @@ class Argon2iPasswordEncoderTest extends TestCase
 {
     const PASSWORD = 'password';
 
-    public function setUp()
+    protected function setUp()
     {
         if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Argon2i algorithm is not supported.');
