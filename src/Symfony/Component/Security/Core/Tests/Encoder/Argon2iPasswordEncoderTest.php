@@ -23,7 +23,7 @@ class Argon2iPasswordEncoderTest extends TestCase
 
     public function setUp()
     {
-        if (!function_exists('sodium_crypto_pwhash_str') && !extension_loaded('libsodium') && !defined('PASSWORD_ARGON2I')) {
+        if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Libsodium is not available.');
         }
     }

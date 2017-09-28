@@ -72,7 +72,7 @@ class UserPasswordEncoderCommandTest extends WebTestCase
 
     public function testEncodePasswordArgon2i()
     {
-        if (!function_exists('sodium_crypto_pwhash_str') && !extension_loaded('libsodium') && !defined('PASSWORD_ARGON2I')) {
+        if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
         $this->passwordEncoderCommandTester->execute(array(
@@ -152,7 +152,7 @@ class UserPasswordEncoderCommandTest extends WebTestCase
 
     public function testEncodePasswordArgon2iOutput()
     {
-        if (!function_exists('sodium_crypto_pwhash_str') && !extension_loaded('libsodium') && !defined('PASSWORD_ARGON2I')) {
+        if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
         $this->passwordEncoderCommandTester->execute(array(

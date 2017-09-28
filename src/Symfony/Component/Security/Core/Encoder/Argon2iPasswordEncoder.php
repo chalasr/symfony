@@ -20,6 +20,13 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
  */
 class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingEncoderInterface
 {
+    public static function isSupported()
+    {
+        return function_exists('sodium_crypto_pwhash_str')
+            || extension_loaded('libsodium')
+            || (\PHP_VERSION_ID >= 70200 && defined('PASSWORD_ARGON2I'));
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -53,15 +60,17 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
         if (function_exists('sodium_crypto_pwhash_str_verify')) {
             $valid = !$this->isPasswordTooLong($raw) && \sodium_crypto_pwhash_str_verify($encoded, $raw);
             \sodium_memzero($raw);
+
             return $valid;
         }
         if (extension_loaded('libsodium')) {
             $valid = !$this->isPasswordTooLong($raw) && \Sodium\crypto_pwhash_str_verify($encoded, $raw);
             \Sodium\memzero($raw);
+
             return $valid;
         }
 
-        throw new \LogicException('The algorithm "argon2i" is not supported.');
+        throw new \LogicException('Argon2i algorithm is not supported. Please install libsodium extension or upgrade to PHP 7.2+.');
     }
 
     private function encodePasswordNative($raw)

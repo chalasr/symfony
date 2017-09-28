@@ -29,6 +29,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Security\Core\Authorization\ExpressionLanguage;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder;
 
 /**
  * SecurityExtension.
@@ -609,6 +610,10 @@ class SecurityExtension extends Extension
 
         // Argon2i encoder
         if ('argon2i' === $config['algorithm']) {
+            if (!Argon2iPasswordEncoder::isSupported()) {
+                throw new InvalidConfigurationException('Argon2i algorithm is not supported. Please install libsodium extension or upgrade to PHP 7.2+.');
+            }
+
             return array(
                 'class' => 'Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder',
                 'arguments' => array(),
