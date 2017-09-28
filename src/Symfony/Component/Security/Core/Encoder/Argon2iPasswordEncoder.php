@@ -22,9 +22,9 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
 {
     public static function isSupported()
     {
-        return function_exists('sodium_crypto_pwhash_str')
-            || extension_loaded('libsodium')
-            || (\PHP_VERSION_ID >= 70200 && defined('PASSWORD_ARGON2I'));
+        return (\PHP_VERSION_ID >= 70200 && \defined('PASSWORD_ARGON2I'))
+            || \function_exists('sodium_crypto_pwhash_str')
+            || \extension_loaded('libsodium');
     }
 
     /**
@@ -36,13 +36,13 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
             throw new BadCredentialsException('Invalid password.');
         }
 
-        if (\PHP_VERSION_ID >= 70200 && defined('PASSWORD_ARGON2I')) {
+        if (\PHP_VERSION_ID >= 70200 && \defined('PASSWORD_ARGON2I')) {
             return $this->encodePasswordNative($raw);
         }
-        if (function_exists('sodium_crypto_pwhash_str')) {
+        if (\function_exists('sodium_crypto_pwhash_str')) {
             return $this->encodePasswordSodiumFunction($raw);
         }
-        if (extension_loaded('libsodium')) {
+        if (\extension_loaded('libsodium')) {
             return $this->encodePasswordSodiumExtension($raw);
         }
 
@@ -54,16 +54,16 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
      */
     public function isPasswordValid($encoded, $raw, $salt)
     {
-        if (\PHP_VERSION_ID >= 70200 && defined('PASSWORD_ARGON2I')) {
+        if (\PHP_VERSION_ID >= 70200 && \defined('PASSWORD_ARGON2I')) {
             return !$this->isPasswordTooLong($raw) && password_verify($raw, $encoded);
         }
-        if (function_exists('sodium_crypto_pwhash_str_verify')) {
+        if (\function_exists('sodium_crypto_pwhash_str_verify')) {
             $valid = !$this->isPasswordTooLong($raw) && \sodium_crypto_pwhash_str_verify($encoded, $raw);
             \sodium_memzero($raw);
 
             return $valid;
         }
-        if (extension_loaded('libsodium')) {
+        if (\extension_loaded('libsodium')) {
             $valid = !$this->isPasswordTooLong($raw) && \Sodium\crypto_pwhash_str_verify($encoded, $raw);
             \Sodium\memzero($raw);
 
