@@ -14,7 +14,7 @@ namespace Symfony\Component\Security\Core\Encoder;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
- * Argon2iPasswordEncoder uses the Argon2i hashing algorithm provided by libsodium.
+ * Argon2iPasswordEncoder uses the Argon2i hashing algorithm.
  *
  * @author Zan Baldwin <hello@zanbaldwin.com>
  */
@@ -46,7 +46,7 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
             return $this->encodePasswordSodiumExtension($raw);
         }
 
-        throw new \LogicException('Argon2i algorithm is not supported. Please install libsodium extension or upgrade to PHP 7.2+.');
+        throw new \LogicException('Argon2i algorithm is not supported. Please install the libsodium extension or upgrade to PHP 7.2+.');
     }
 
     /**
@@ -70,7 +70,7 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
             return $valid;
         }
 
-        throw new \LogicException('Argon2i algorithm is not supported. Please install libsodium extension or upgrade to PHP 7.2+.');
+        throw new \LogicException('Argon2i algorithm is not supported. Please install the libsodium extension or upgrade to PHP 7.2+.');
     }
 
     private function encodePasswordNative($raw)

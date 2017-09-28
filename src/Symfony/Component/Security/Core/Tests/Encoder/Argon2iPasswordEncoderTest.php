@@ -24,7 +24,7 @@ class Argon2iPasswordEncoderTest extends TestCase
     public function setUp()
     {
         if (!Argon2iPasswordEncoder::isSupported()) {
-            $this->markTestSkipped('Libsodium is not available.');
+            $this->markTestSkipped('Argon2i algorithm is not supported.');
         }
     }
 
