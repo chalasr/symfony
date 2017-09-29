@@ -75,6 +75,7 @@ class UserPasswordEncoderCommandTest extends WebTestCase
         if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
+        $this->setupArgon2i();
         $this->passwordEncoderCommandTester->execute(array(
             'command' => 'security:encode-password',
             'password' => 'password',
@@ -155,6 +156,8 @@ class UserPasswordEncoderCommandTest extends WebTestCase
         if (!Argon2iPasswordEncoder::isSupported()) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
+
+        $this->setupArgon2i();
         $this->passwordEncoderCommandTester->execute(array(
             'command' => 'security:encode-password',
             'password' => 'p@ssw0rd',
@@ -189,12 +192,11 @@ class UserPasswordEncoderCommandTest extends WebTestCase
         ), array('decorated' => false));
 
         $this->assertContains(<<<EOTXT
- For which user class would you like to encode a password? [Custom\Class\Argon2i\User]:
-  [0] Custom\Class\Argon2i\User
-  [1] Custom\Class\Bcrypt\User
-  [2] Custom\Class\Pbkdf2\User
-  [3] Custom\Class\Test\User
-  [4] Symfony\Component\Security\Core\User\User
+ For which user class would you like to encode a password? [Custom\Class\Bcrypt\User]:
+  [0] Custom\Class\Bcrypt\User
+  [1] Custom\Class\Pbkdf2\User
+  [2] Custom\Class\Test\User
+  [3] Symfony\Component\Security\Core\User\User
 EOTXT
         , $this->passwordEncoderCommandTester->getDisplay(true));
     }
@@ -265,5 +267,18 @@ EOTXT
     protected function tearDown()
     {
         $this->passwordEncoderCommandTester = null;
+    }
+
+    private function setupArgon2i()
+    {
+        putenv('COLUMNS='.(119 + strlen(PHP_EOL)));
+        $kernel = $this->createKernel(array('test_case' => 'PasswordEncode', 'root_config' => 'argon2i'));
+        $kernel->boot();
+
+        $application = new Application($kernel);
+
+        $passwordEncoderCommand = $application->get('security:encode-password');
+
+        $this->passwordEncoderCommandTester = new CommandTester($passwordEncoderCommand);
     }
 }

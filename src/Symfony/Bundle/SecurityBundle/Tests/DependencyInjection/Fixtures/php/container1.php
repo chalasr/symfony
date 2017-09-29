@@ -25,9 +25,6 @@ $container->loadFromExtension('security', array(
             'algorithm' => 'bcrypt',
             'cost' => 15,
         ),
-        'JMS\FooBundle\Entity\User7' => array(
-            'algorithm' => 'argon2i',
-        ),
     ),
     'providers' => array(
         'default' => array(
