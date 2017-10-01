@@ -149,10 +149,8 @@ class SecurityExtensionTest extends TestCase
     }
 
     /**
-     * @group legacy
-     * @expectedDeprecation Firewall "some_firewall" is configured as "stateless" but the "switch_user.stateless" key is set to false. Both should have the same value, the firewall's "stateless" value will be used as default value for the "switch_user.stateless" key in 4.0.
      */
-    public function testSwitchUserNotStatelessOnStatelessFirewall()
+    public function testSwitchUserIsAutomaticallyStatelessOnStatelessFirewall()
     {
         $container = $this->getRawContainer();
 
@@ -197,6 +195,8 @@ class SecurityExtensionTest extends TestCase
         ));
 
         $container->compile();
+
+        $this->assertTrue($container->getDefinition('security.authentication.switchuser_listener.default')->getArgument(9));
     }
 
     protected function getRawContainer()

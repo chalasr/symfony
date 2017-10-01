@@ -9,5 +9,5 @@ security:
                     user_can_switch: { password: test, roles: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH] }
     firewalls:
         main:
-            switch_user:
-                stateless: true
+            stateless: true
+            switch_user: ~

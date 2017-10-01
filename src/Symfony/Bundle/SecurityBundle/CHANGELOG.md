@@ -14,6 +14,7 @@ CHANGELOG
  * removed command `init:acl` along with `InitAclCommand` class
  * removed `acl` configuration key and related services, use symfony/acl-bundle instead
  * removed auto picking the first registered provider when no configured provider on a firewall and ambiguous
+ * made the `switch_user.stateless` option `true` when firewall is stateless
 
 3.4.0
 -----
