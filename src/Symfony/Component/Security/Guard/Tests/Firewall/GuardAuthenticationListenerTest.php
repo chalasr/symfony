@@ -207,6 +207,7 @@ class GuardAuthenticationListenerTest extends TestCase
 
     /**
      * @group legacy
+     * @expectedDeprecation The Symfony\Component\Security\Guard\GuardAuthenticatorInterface interface is deprecated since version 3.4 and will be removed in 4.0. Implement Symfony\Component\Security\Guard\AuthenticatorInterface instead.
      */
     public function testLegacyInterfaceNullCredentials()
     {
@@ -240,6 +241,7 @@ class GuardAuthenticationListenerTest extends TestCase
 
     /**
      * @group legacy
+     * @expectedDeprecation The Symfony\Component\Security\Guard\GuardAuthenticatorInterface interface is deprecated since version 3.4 and will be removed in 4.0. Implement Symfony\Component\Security\Guard\AuthenticatorInterface instead.
      */
     public function testLegacyInterfaceKeepsWorking()
     {
@@ -294,6 +296,7 @@ class GuardAuthenticationListenerTest extends TestCase
 
     /**
      * @group legacy
+     * @expectedDeprecation The Symfony\Component\Security\Guard\GuardAuthenticatorInterface interface is deprecated since version 3.4 and will be removed in 4.0. Implement Symfony\Component\Security\Guard\AuthenticatorInterface instead.
      */
     public function testReturnNullToSkipAuth()
     {

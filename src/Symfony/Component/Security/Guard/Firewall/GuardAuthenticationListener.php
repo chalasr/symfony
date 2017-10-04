@@ -104,10 +104,9 @@ class GuardAuthenticationListener implements ListenerInterface
 
             // abort the execution of the authenticator if it doesn't support the request.
             if ($guardAuthenticator instanceof GuardAuthenticatorInterface) {
-                // it's a GuardAuthenticatorInterface
-                // we support the previous behaviour to avoid BC break.
+                // deprecated since version 3.4, to be removed in 4.0
+                @trigger_error(sprintf('The %s interface is deprecated since version 3.4 and will be removed in 4.0. Implement %s instead.', GuardAuthenticatorInterface::class, AuthenticatorInterface::class), E_USER_DEPRECATED);
                 $credentialsCanBeNull = true;
-                @trigger_error('The Symfony\Component\Security\Guard\GuardAuthenticatorInterface interface is deprecated since version 3.1 and will be removed in 4.0. Use Symfony\Component\Security\Guard\Authenticator\GuardAuthenticatorInterface instead.', E_USER_DEPRECATED);
             } else {
                 if (true !== $guardAuthenticator->supports($request)) {
                     return;

@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Security\Guard;
 
+@trigger_error(sprintf('The %s interface is deprecated since version 3.4 and will be removed in 4.0. Implement %s instead.', GuardAuthenticatorInterface::class, AuthenticatorInterface::class), E_USER_DEPRECATED);
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -28,7 +30,7 @@ use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
  *
  * @author Ryan Weaver <ryan@knpuniversity.com>
  *
- * @deprecated Symfony\Component\Security\Guard\AuthenticatorInterface must be used instead
+ * @deprecated since version 3.4, to be removed in 4.0. Use AuthenticatorInterface instead.
  */
 interface GuardAuthenticatorInterface extends AuthenticatorInterface
 {
