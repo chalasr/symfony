@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\HttpFoundation\Session\Storage\Proxy;
 
-@trigger_error('The '.__NAMESPACE__.'\AbstractProxy class is deprecated since version 3.4 and will be removed in 4.0. Use your session handler implementation directly.', E_USER_DEPRECATED);
 
 /**
  * @deprecated since version 3.4, to be removed in 4.0. Use your session handler implementation directly.

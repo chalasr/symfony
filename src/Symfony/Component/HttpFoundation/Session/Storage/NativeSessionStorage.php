@@ -399,9 +399,9 @@ class NativeSessionStorage implements SessionStorageInterface
 
         // Wrap $saveHandler in proxy and prevent double wrapping of proxy
         if (!$saveHandler instanceof AbstractProxy && $saveHandler instanceof \SessionHandlerInterface) {
-            $saveHandler = new SessionHandlerProxy($saveHandler);
+            $saveHandler = new SessionHandlerProxy($saveHandler, false);
         } elseif (!$saveHandler instanceof AbstractProxy) {
-            $saveHandler = new SessionHandlerProxy(new \SessionHandler());
+            $saveHandler = new SessionHandlerProxy(new \SessionHandler(), false);
         }
         $this->saveHandler = $saveHandler;
 
