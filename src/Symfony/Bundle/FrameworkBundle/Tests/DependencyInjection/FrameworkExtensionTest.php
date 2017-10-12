@@ -52,12 +52,9 @@ abstract class FrameworkExtensionTest extends TestCase
 
     abstract protected function loadFromFile(ContainerBuilder $container, $file);
 
-    /**
-     * @group legacy
-     */
     public function testFormCsrfProtection()
     {
-        $container = $this->createContainerFromFile('full');
+        $container = $this->createContainerFromFile('form_csrf');
 
         $def = $container->getDefinition('form.type_extension.csrf');
 

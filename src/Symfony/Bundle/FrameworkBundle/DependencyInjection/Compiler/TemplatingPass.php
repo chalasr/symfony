@@ -40,7 +40,7 @@ class TemplatingPass implements CompilerPassInterface
 
             foreach ($container->findTaggedServiceIds('templating.helper', true) as $id => $attributes) {
                 if (!$container->getDefinition($id)->isDeprecated()) {
-                    @trigger_error('The "templating.helper" tag is since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
+                    @trigger_error('The "templating.helper" tag is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', E_USER_DEPRECATED);
                 }
 
                 if (isset($attributes[0]['alias'])) {
