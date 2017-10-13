@@ -1,2 +1,4 @@
 framework:
-    form: ~
+    form:
+        csrf_protection:
+            field_name: _csrf
