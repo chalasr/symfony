@@ -1,4 +1,8 @@
 framework:
+    session:
+        storage_id: session.storage.native
+        handler_id: session.handler.native_file
+    csrf_protection: true
     form:
         csrf_protection:
             field_name: _csrf
