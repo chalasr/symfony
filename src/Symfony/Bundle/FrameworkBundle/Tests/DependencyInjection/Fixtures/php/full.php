@@ -39,15 +39,6 @@ $container->loadFromExtension('framework', array(
         'gc_probability' => 1,
         'save_path' => '/path/to/sessions',
     ),
-    'templating' => array(
-        'cache' => '/path/to/cache',
-        'engines' => array('php', 'twig'),
-        'loader' => array('loader.foo', 'loader.bar'),
-        'form' => array(
-            'resources' => array('theme1', 'theme2'),
-        ),
-        'hinclude_default_template' => 'global_hinclude_template',
-    ),
     'assets' => array(
         'version' => 'v1',
     ),

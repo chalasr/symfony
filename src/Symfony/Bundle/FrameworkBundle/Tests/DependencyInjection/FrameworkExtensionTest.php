@@ -54,7 +54,7 @@ abstract class FrameworkExtensionTest extends TestCase
 
     public function testFormCsrfProtection()
     {
-        $container = $this->createContainerFromFile('form_csrf');
+        $container = $this->createContainerFromFile('full');
 
         $def = $container->getDefinition('form.type_extension.csrf');
 
@@ -393,7 +393,7 @@ abstract class FrameworkExtensionTest extends TestCase
      */
     public function testTemplating()
     {
-        $container = $this->createContainerFromFile('full');
+        $container = $this->createContainerFromFile('templating');
 
         $this->assertTrue($container->hasDefinition('templating.name_parser'), '->registerTemplatingConfiguration() loads templating.xml');
 
@@ -899,9 +899,12 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertEquals(sort($expectedLoaders), sort($loaders));
     }
 
+    /**
+     * @group legacy
+     */
     public function testAssetHelperWhenAssetsAreEnabled()
     {
-        $container = $this->createContainerFromFile('full');
+        $container = $this->createContainerFromFile('templating');
         $packages = $container->getDefinition('templating.helper.assets')->getArgument(0);
 
         $this->assertSame('assets.packages', (string) $packages);
