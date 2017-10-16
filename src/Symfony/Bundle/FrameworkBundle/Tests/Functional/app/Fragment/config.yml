@@ -3,5 +3,3 @@ imports:
 
 framework:
     fragments: ~
-    templating:
-        engines: ['php']

@@ -16,9 +16,6 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
  */
 class ContainerDumpTest extends WebTestCase
 {
-    /**
-     * @group legacy
-     */
     public function testContainerCompilationInDebug()
     {
         $client = $this->createClient(array('test_case' => 'ContainerDump', 'root_config' => 'config.yml'));

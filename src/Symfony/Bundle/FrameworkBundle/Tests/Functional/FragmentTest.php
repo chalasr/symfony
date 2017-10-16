@@ -11,9 +11,6 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 
-/**
- * @group legacy
- */
 class FragmentTest extends WebTestCase
 {
     /**
@@ -28,7 +25,16 @@ class FragmentTest extends WebTestCase
 
         $client->request('GET', '/fragment_home');
 
-        $this->assertEquals('bar txt--html--es--fr', $client->getResponse()->getContent());
+        $this->assertEquals(<<<TXT
+bar txt
+--
+html
+--
+es
+--
+fr
+TXT
+            , $client->getResponse()->getContent());
     }
 
     public function getConfigs()

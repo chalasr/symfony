@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\TwigBundle;
 
-@trigger_error('The '.TwigEngine::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use \Twig_Environment instead.', E_USER_DEPRECATED);
+@trigger_error('The '.TwigEngine::class.' class is deprecated since version 3.4 and will be removed in 4.0. Use \Twig\Environment instead.', E_USER_DEPRECATED);
 
 use Symfony\Bridge\Twig\TwigEngine as BaseEngine;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
