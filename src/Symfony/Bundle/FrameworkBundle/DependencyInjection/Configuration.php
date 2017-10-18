@@ -511,6 +511,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('templating')
+                    ->setDeprecated('The "framework.templating" configuration key is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.')
                     ->info('templating configuration')
                     ->canBeEnabled()
                     ->beforeNormalization()

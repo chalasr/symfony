@@ -31,6 +31,10 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    /**
+     * @group legacy
+     * @expectedDeprecation The "framework.templating" configuration key is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.
+     */
     public function testDoNoDuplicateDefaultFormResources()
     {
         $input = array('templating' => array(

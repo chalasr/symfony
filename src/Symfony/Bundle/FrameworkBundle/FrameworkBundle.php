@@ -91,7 +91,8 @@ class FrameworkBundle extends Bundle
         // must be registered before removing private services as some might be listeners/subscribers
         // but as late as possible to get resolved parameters
         $container->addCompilerPass(new RegisterListenersPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        $container->addCompilerPass(new TemplatingPass());
+        // @deprecated since version 3.4, to be removed in 4.0
+        $container->addCompilerPass(new TemplatingPass(false));
         $this->addCompilerPassIfExists($container, AddConstraintValidatorsPass::class, PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new AddAnnotationsCachedReaderPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $this->addCompilerPassIfExists($container, AddValidatorInitializersPass::class);

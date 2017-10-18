@@ -390,6 +390,7 @@ abstract class FrameworkExtensionTest extends TestCase
 
     /**
      * @group legacy
+     * @expectedDeprecation The "framework.templating" configuration key is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.
      */
     public function testTemplating()
     {
@@ -412,6 +413,9 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertEquals('global_hinclude_template', $container->getParameter('fragment.renderer.hinclude.global_template'), '->registerTemplatingConfiguration() registers the global hinclude.js template');
     }
 
+    /**
+     * @group legacy
+     */
     public function testTemplatingCanBeDisabled()
     {
         $container = $this->createContainerFromFile('templating_disabled');
@@ -534,6 +538,7 @@ abstract class FrameworkExtensionTest extends TestCase
     }
 
     /**
+     * @group legacy
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function testTemplatingRequiresAtLeastOneEngine()

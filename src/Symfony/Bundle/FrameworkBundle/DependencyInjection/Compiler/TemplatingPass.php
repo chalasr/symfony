@@ -23,6 +23,13 @@ use Symfony\Component\Templating\EngineInterface as ComponentEngineInterface;
  */
 class TemplatingPass implements CompilerPassInterface
 {
+    public function __construct($triggerDeprecation = true)
+    {
+        if ($triggerDeprecation) {
+            @trigger_error(sprintf('The %s class is deprecated since version 3.4 and will be removed in 4.0. Use Twig instead.', self::class), E_USER_DEPRECATED);
+        }
+    }
+
     public function process(ContainerBuilder $container)
     {
         if ($container->hasDefinition('templating')) {
