@@ -173,13 +173,6 @@ class Application
 
         if (!$name) {
             $name = $this->defaultCommand;
-            $definition = $this->getDefinition();
-            $definition->setArguments(array_merge(
-                $definition->getArguments(),
-                array(
-                    'command' => new InputArgument('command', InputArgument::OPTIONAL, $definition->getArgument('command')->getDescription(), $name),
-                )
-            ));
         }
 
         $this->runningCommand = null;
