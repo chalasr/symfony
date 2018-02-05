@@ -151,6 +151,11 @@ before_install:
       elif [[ ! $skip && $PHP = 7.* ]]; then
           tfold ext.apcu tpecl apcu-5.1.6 apcu.so
           tfold ext.mongodb tpecl mongodb-1.4.0RC1 mongodb.so
+          if [[ $PHP = 7.2 ]]; then
+              git clone -b stable https://github.com/jedisct1/libsodium.git
+              cd libsodium && sudo ./configure && sudo make check && sudo make install && cd ..
+              tfold ext.sodium tpecl libsodium-2.0.10 sodium.so
+          fi
       fi
 
     - |
