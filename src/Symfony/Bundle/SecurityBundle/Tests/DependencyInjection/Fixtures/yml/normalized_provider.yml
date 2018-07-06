@@ -1,0 +1,9 @@
+security:
+    providers:
+        with-dash:
+            memory: ~
+
+    firewalls:
+        main:
+            provider: with-dash
+            form_login: true

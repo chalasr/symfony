@@ -262,6 +262,15 @@ abstract class CompleteConfigurationTest extends TestCase
         $this->assertEquals('security.user_checker', $this->getContainer('container1')->getAlias('security.user_checker.secure'));
     }
 
+    public function testUserProviderNameNormalization()
+    {
+        $this->assertEquals(
+            array(new Reference('security.user.provider.concrete.with_dash')),
+            $this->getContainer('normalized_provider')->getDefinition('security.context_listener')->getArgument(1)
+        );
+
+    }
+
     protected function getContainer($file)
     {
         $file = $file.'.'.$this->getFileExtension();

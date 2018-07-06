@@ -270,7 +270,7 @@ class SecurityExtension extends Extension
 
         // Provider id (take the first registered provider if none defined)
         if (isset($firewall['provider'])) {
-            $defaultProvider = $this->getUserProviderId($firewall['provider']);
+            $defaultProvider = $this->getUserProviderId(str_replace('-', '_', $firewall['provider']));
         } else {
             $defaultProvider = reset($providerIds);
         }
@@ -401,7 +401,7 @@ class SecurityExtension extends Extension
                 $key = str_replace('-', '_', $factory->getKey());
 
                 if (isset($firewall[$key])) {
-                    $userProvider = isset($firewall[$key]['provider']) ? $this->getUserProviderId($firewall[$key]['provider']) : $defaultProvider;
+                    $userProvider = isset($firewall[$key]['provider']) ? $this->getUserProviderId(str_replace('-', '_', $firewall[$key]['provider'])) : $defaultProvider;
 
                     list($provider, $listenerId, $defaultEntryPoint) = $factory->create($container, $id, $firewall[$key], $userProvider, $defaultEntryPoint);
 
@@ -506,8 +506,10 @@ class SecurityExtension extends Extension
     {
         $providerIds = array();
         foreach ($config['providers'] as $name => $provider) {
+            $name = str_replace('-', '_', $name);
             $id = $this->createUserDaoProvider($name, $provider, $container);
-            $providerIds[] = $id;
+            $providerIds[$name] = $id;
+
         }
 
         return $providerIds;
