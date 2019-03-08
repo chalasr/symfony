@@ -18,6 +18,7 @@ CHANGELOG
  * Added support for Translator paths, Twig paths in translation commands.
  * Added support for PHP files with translations in translation commands.
  * Added support for boolean container parameters within routes.
+ * Added `Routing\Loader` and `Routing\Loader\Configurator` namespaces to ease defining routes in all formats using `RedirectController` and `TemplateController`
 
 4.2.0
 -----

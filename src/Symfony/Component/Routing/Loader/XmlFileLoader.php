@@ -26,7 +26,7 @@ use Symfony\Component\Routing\RouteCollection;
 class XmlFileLoader extends FileLoader
 {
     const NAMESPACE_URI = 'http://symfony.com/schema/routing';
-    const SCHEME_PATH = '/schema/routing/routing-1.0.xsd';
+    const SCHEME_PATH = __DIR__.'/schema/routing/routing-1.0.xsd';
 
     /**
      * Loads an XML file.
@@ -246,7 +246,7 @@ class XmlFileLoader extends FileLoader
      */
     protected function loadFile($file)
     {
-        return XmlUtils::loadFile($file, __DIR__.static::SCHEME_PATH);
+        return XmlUtils::loadFile($file, static::SCHEME_PATH);
     }
 
     /**
@@ -270,6 +270,7 @@ class XmlFileLoader extends FileLoader
 
         /** @var \DOMElement $n */
         foreach ($node->getElementsByTagNameNS(self::NAMESPACE_URI, '*') as $n) {
+            /** @var \DOMElement $n */
             if ($node !== $n->parentNode) {
                 continue;
             }

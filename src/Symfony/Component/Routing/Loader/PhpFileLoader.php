@@ -22,6 +22,8 @@ use Symfony\Component\Routing\RouteCollection;
  * The file must return a RouteCollection instance.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ * @author Nicolas grekas <p@tchwork.com>
+ * @author Jules Pietri <jules@heahprod.com>
  */
 class PhpFileLoader extends FileLoader
 {
@@ -48,7 +50,7 @@ class PhpFileLoader extends FileLoader
 
         if (\is_object($result) && \is_callable($result)) {
             $collection = new RouteCollection();
-            $result(new RoutingConfigurator($collection, $this, $path, $file));
+            $result($this->getConfigurator($collection, $path, $file));
         } else {
             $collection = $result;
         }
@@ -64,6 +66,11 @@ class PhpFileLoader extends FileLoader
     public function supports($resource, $type = null)
     {
         return \is_string($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION) && (!$type || 'php' === $type);
+    }
+
+    protected function getConfigurator(RouteCollection $collection, string $path, string $file): RoutingConfigurator
+    {
+        return new RoutingConfigurator($collection, $this, $path, $file);
     }
 }
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns="http://symfony.com/schema/routing"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://symfony.com/schema/routing"
+            elementFormDefault="qualified">
+
+  <!--<xsd:redefine schemaLocation="http://symfony.com/schema/routing/routing-1.0.xsd">-->
+  <!-- use a vendor relative path -->
+  <!--<xsd:redefine schemaLocation="../../../../routing/Loader/schema/routing/routing-1.0.xsd">-->
+  <!-- tmp use an absolute path -->
+  <xsd:redefine schemaLocation="/Users/jules/Developer/symfony/src/Symfony/Component/Routing/Loader/schema/routing/routing-1.0.xsd">
+    <xsd:complexType name="route">
+      <xsd:complexContent>
+        <xsd:extension base="route">
+          <xsd:attribute name="template" type="xsd:string" />
+          <xsd:attribute name="redirect" type="xsd:string" />
+          <xsd:attribute name="url-redirect" type="xsd:string" />
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:redefine>
+
+</xsd:schema>
