@@ -13,21 +13,31 @@ namespace Symfony\Bundle\FrameworkBundle\Routing\Loader\Configurator;
 
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Bundle\FrameworkBundle\Controller\TemplateController;
-use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator as BaseRoutingConfigurator;
+use Symfony\Component\Routing\Loader\PhpFileLoader;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * @author Jules Pietri <jules@heahprod.com>
  */
 class RoutingConfigurator extends BaseRoutingConfigurator
 {
+    private $collection;
+
+    public function __construct(RouteCollection $collection, PhpFileLoader $loader, string $path, string $file)
+    {
+        parent::__construct($collection, $loader, $path, $file);
+
+        $this->collection = $collection;
+    }
+
     /**
      * @param string|array $path     The path, or the localized paths of the route
      * @param string       $template The template name
      */
     final public function template(string $name, $path, string $template): TemplateRouteConfigurator
     {
-        return new TemplateRouteConfigurator($this->createRouteConfigurator($name, $path, [
+        return new TemplateRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'template' => $template,
             '_controller' => TemplateController::class,
         ]));
@@ -39,7 +49,7 @@ class RoutingConfigurator extends BaseRoutingConfigurator
      */
     final public function redirect(string $name, $path, string $route): RedirectRouteConfigurator
     {
-        return new RedirectRouteConfigurator($this->createRouteConfigurator($name, $path, [
+        return new RedirectRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'route' => $route,
             '_controller' => RedirectController::class.'::redirectAction',
         ]));
@@ -49,16 +59,19 @@ class RoutingConfigurator extends BaseRoutingConfigurator
      * @param string|array $path The path, or the localized paths of the route
      * @param string       $url  The absolute path or URL to redirect to
      */
-    final public function urlRedirect(string $name, string $path, string $url): UrlRedirectRouteConfigurator
+    final public function urlRedirect(string $name, $path, string $url): UrlRedirectRouteConfigurator
     {
-        return new UrlRedirectRouteConfigurator($this->createRouteConfigurator($name, $path, [
+        return new UrlRedirectRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'path' => $url,
-            '_controller' => RedirectController::class.'::urlRedirectAction',
+            '_controller' => RedirectController::class.'::urlRedirectAction'
         ]));
     }
 
-    private function createRouteConfigurator(string $name, $path, array $defaults): RouteConfigurator
+    private function getRouteConfiguratorArguments(string $name, $path, array $defaults): array
     {
-        return $this->add($name,$path)->defaults($defaults);
+        $routes = $this->createRoutes($this->collection, $name, $path);
+        $routes->addDefaults($defaults);
+
+        return [$this->collection, $routes];
     }
 }

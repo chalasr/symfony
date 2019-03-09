@@ -11,10 +11,12 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Routing\Loader\Configurator;
 
+use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
+
 /**
  * @author Jules Pietri <jules@heahprod.com>
  */
-class TemplateRouteConfigurator extends AbstractRouteConfiguratorDecorator
+class TemplateRouteConfigurator extends RouteConfigurator
 {
     /**
      * @param int|null $maxAge Max age for client caching

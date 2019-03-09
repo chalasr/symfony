@@ -11,10 +11,12 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Routing\Loader\Configurator;
 
+use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
+
 /**
  * @author Jules Pietri <jules@heahprod.com>
  */
-class RedirectRouteConfigurator extends AbstractRouteConfiguratorDecorator
+class RedirectRouteConfigurator extends RouteConfigurator
 {
     /**
      * @param bool $permanent Whether the redirection is permanent
