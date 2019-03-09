@@ -13,7 +13,8 @@ namespace Symfony\Component\Routing\Loader;
 
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Config\Resource\FileResource;
-use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Loader\Configurator\Traits\LocalizedRouteTrait;
+use Symfony\Component\Routing\Loader\Configurator\Traits\PrefixTrait;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser as YamlParser;
@@ -27,6 +28,9 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlFileLoader extends FileLoader
 {
+    use LocalizedRouteTrait;
+    use PrefixTrait;
+
     private static $availableKeys = [
         'resource', 'type', 'prefix', 'path', 'host', 'schemes', 'methods', 'defaults', 'requirements', 'options', 'condition', 'controller', 'name_prefix', 'trailing_slash_on_root',
     ];
@@ -108,13 +112,7 @@ class YamlFileLoader extends FileLoader
      */
     protected function parseRoute(RouteCollection $collection, $name, array $config, $path)
     {
-        $defaults = isset($config['defaults']) ? $config['defaults'] : [];
-        $requirements = isset($config['requirements']) ? $config['requirements'] : [];
-        $options = isset($config['options']) ? $config['options'] : [];
-        $host = isset($config['host']) ? $config['host'] : '';
-        $schemes = isset($config['schemes']) ? $config['schemes'] : [];
-        $methods = isset($config['methods']) ? $config['methods'] : [];
-        $condition = isset($config['condition']) ? $config['condition'] : null;
+        $requirements = $config['requirements'] ?? [];
 
         foreach ($requirements as $placeholder => $requirement) {
             if (\is_int($placeholder)) {
@@ -122,24 +120,20 @@ class YamlFileLoader extends FileLoader
             }
         }
 
+        $defaults = isset($config['defaults']) ? $config['defaults'] : [];
+
         if (isset($config['controller'])) {
             $defaults['_controller'] = $config['controller'];
         }
 
-        if (\is_array($config['path'])) {
-            $route = new Route('', $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
-
-            foreach ($config['path'] as $locale => $path) {
-                $localizedRoute = clone $route;
-                $localizedRoute->setDefault('_locale', $locale);
-                $localizedRoute->setDefault('_canonical_route', $name);
-                $localizedRoute->setPath($path);
-                $collection->add($name.'.'.$locale, $localizedRoute);
-            }
-        } else {
-            $route = new Route($config['path'], $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
-            $collection->add($name, $route);
-        }
+        $routes = $this->createRoutes($collection, $name, $config['path']);
+        $routes->addDefaults($defaults);
+        $routes->addRequirements($requirements);
+        $routes->addOptions($config['options'] ?? []);
+        $routes->setHost($config['host'] ?? '');
+        $routes->setSchemes($config['schemes'] ?? []);
+        $routes->setMethods($config['methods'] ?? []);
+        $routes->setCondition($config['condition'] ?? null);
     }
 
     /**
@@ -152,16 +146,7 @@ class YamlFileLoader extends FileLoader
      */
     protected function parseImport(RouteCollection $collection, array $config, $path, $file)
     {
-        $type = isset($config['type']) ? $config['type'] : null;
-        $prefix = isset($config['prefix']) ? $config['prefix'] : '';
-        $defaults = isset($config['defaults']) ? $config['defaults'] : [];
-        $requirements = isset($config['requirements']) ? $config['requirements'] : [];
-        $options = isset($config['options']) ? $config['options'] : [];
-        $host = isset($config['host']) ? $config['host'] : null;
-        $condition = isset($config['condition']) ? $config['condition'] : null;
-        $schemes = isset($config['schemes']) ? $config['schemes'] : null;
-        $methods = isset($config['methods']) ? $config['methods'] : null;
-        $trailingSlashOnRoot = $config['trailing_slash_on_root'] ?? true;
+        $defaults = $config['defaults'] ?? [];
 
         if (isset($config['controller'])) {
             $defaults['_controller'] = $config['controller'];
@@ -169,66 +154,35 @@ class YamlFileLoader extends FileLoader
 
         $this->setCurrentDir(\dirname($path));
 
+        $type = $config['type'] ?? null;
+
         $imported = $this->import($config['resource'], $type, false, $file);
 
         if (!\is_array($imported)) {
             $imported = [$imported];
         }
 
-        foreach ($imported as $subCollection) {
-            /* @var $subCollection RouteCollection */
-            if (!\is_array($prefix)) {
-                $subCollection->addPrefix($prefix);
-                if (!$trailingSlashOnRoot) {
-                    $rootPath = (new Route(trim(trim($prefix), '/').'/'))->getPath();
-                    foreach ($subCollection->all() as $route) {
-                        if ($route->getPath() === $rootPath) {
-                            $route->setPath(rtrim($rootPath, '/'));
-                        }
-                    }
-                }
-            } else {
-                foreach ($prefix as $locale => $localePrefix) {
-                    $prefix[$locale] = trim(trim($localePrefix), '/');
-                }
-                foreach ($subCollection->all() as $name => $route) {
-                    if (null === $locale = $route->getDefault('_locale')) {
-                        $subCollection->remove($name);
-                        foreach ($prefix as $locale => $localePrefix) {
-                            $localizedRoute = clone $route;
-                            $localizedRoute->setDefault('_locale', $locale);
-                            $localizedRoute->setDefault('_canonical_route', $name);
-                            $localizedRoute->setPath($localePrefix.(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                            $subCollection->add($name.'.'.$locale, $localizedRoute);
-                        }
-                    } elseif (!isset($prefix[$locale])) {
-                        throw new \InvalidArgumentException(sprintf('Route "%s" with locale "%s" is missing a corresponding prefix when imported in "%s".', $name, $locale, $file));
-                    } else {
-                        $route->setPath($prefix[$locale].(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                        $subCollection->add($name, $route);
-                    }
-                }
-            }
+        $requirements = $config['requirements'] ?? [];
+        $options = $config['options'] ?? [];
+        $host = $config['host'] ?? null;
+        $schemes = $config['schemes'] ?? null;
+        $methods = $config['methods'] ?? null;
+        $condition = $config['condition'] ?? null;
+        $namePrefix = $config['name_prefix'] ?? '';
+        $prefix = $config['prefix'] ?? '';
+        $trailingSlashOnRoot = $config['trailing_slash_on_root'] ?? true;
 
-            if (null !== $host) {
-                $subCollection->setHost($host);
-            }
-            if (null !== $condition) {
-                $subCollection->setCondition($condition);
-            }
-            if (null !== $schemes) {
-                $subCollection->setSchemes($schemes);
-            }
-            if (null !== $methods) {
-                $subCollection->setMethods($methods);
-            }
+        foreach ($imported as $subCollection) {
+            $this->addPrefix($subCollection, $prefix, $trailingSlashOnRoot);
+
             $subCollection->addDefaults($defaults);
             $subCollection->addRequirements($requirements);
             $subCollection->addOptions($options);
-
-            if (isset($config['name_prefix'])) {
-                $subCollection->addNamePrefix($config['name_prefix']);
-            }
+            $subCollection->setHost($host);
+            $subCollection->setSchemes($schemes);
+            $subCollection->setMethods($methods);
+            $subCollection->setCondition($condition);
+            $subCollection->addNamePrefix($namePrefix);
 
             $collection->addCollection($subCollection);
         }

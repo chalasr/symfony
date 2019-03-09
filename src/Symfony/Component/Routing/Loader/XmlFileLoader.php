@@ -14,7 +14,8 @@ namespace Symfony\Component\Routing\Loader;
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Util\XmlUtils;
-use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Loader\Configurator\Traits\LocalizedRouteTrait;
+use Symfony\Component\Routing\Loader\Configurator\Traits\PrefixTrait;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -25,6 +26,9 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class XmlFileLoader extends FileLoader
 {
+    use LocalizedRouteTrait;
+    use PrefixTrait;
+
     const NAMESPACE_URI = 'http://symfony.com/schema/routing';
     const SCHEME_PATH = __DIR__.'/schema/routing/routing-1.0.xsd';
 
@@ -101,40 +105,39 @@ class XmlFileLoader extends FileLoader
      *
      * @param RouteCollection $collection RouteCollection instance
      * @param \DOMElement     $node       Element to parse that represents a Route
-     * @param string          $path       Full path of the XML file being processed
+     * @param string          $filepath   Full path of the XML file being processed
      *
      * @throws \InvalidArgumentException When the XML is invalid
      */
-    protected function parseRoute(RouteCollection $collection, \DOMElement $node, $path)
+    protected function parseRoute(RouteCollection $collection, \DOMElement $node, $filepath)
     {
         if ('' === $id = $node->getAttribute('id')) {
-            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must have an "id" attribute.', $path));
+            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must have an "id" attribute.', $filepath));
         }
 
         $schemes = preg_split('/[\s,\|]++/', $node->getAttribute('schemes'), -1, PREG_SPLIT_NO_EMPTY);
         $methods = preg_split('/[\s,\|]++/', $node->getAttribute('methods'), -1, PREG_SPLIT_NO_EMPTY);
 
-        list($defaults, $requirements, $options, $condition, $paths) = $this->parseConfigs($node, $path);
+        list($defaults, $requirements, $options, $condition, $paths) = $this->parseConfigs($node, $filepath);
 
-        if (!$paths && '' === $node->getAttribute('path')) {
-            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must have a "path" attribute or <path> child nodes.', $path));
+        $path = $node->getAttribute('path');
+
+        if (!$paths && '' === $path) {
+            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must have a "path" attribute or <path> child nodes.', $filepath));
         }
 
-        if ($paths && '' !== $node->getAttribute('path')) {
-            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "path" attribute and <path> child nodes.', $path));
+        if ($paths && '' !== $path) {
+            throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "path" attribute and <path> child nodes.', $filepath));
         }
 
-        if (!$paths) {
-            $route = new Route($node->getAttribute('path'), $defaults, $requirements, $options, $node->getAttribute('host'), $schemes, $methods, $condition);
-            $collection->add($id, $route);
-        } else {
-            foreach ($paths as $locale => $p) {
-                $defaults['_locale'] = $locale;
-                $defaults['_canonical_route'] = $id;
-                $route = new Route($p, $defaults, $requirements, $options, $node->getAttribute('host'), $schemes, $methods, $condition);
-                $collection->add($id.'.'.$locale, $route);
-            }
-        }
+        $routes = $this->createRoutes($collection, $id, $paths ?: $path);
+        $routes->addDefaults($defaults);
+        $routes->addRequirements($requirements);
+        $routes->addOptions($options);
+        $routes->setHost($node->getAttribute('host'));
+        $routes->setSchemes($schemes);
+        $routes->setMethods($methods);
+        $routes->setCondition($condition);
     }
 
     /**
@@ -153,14 +156,9 @@ class XmlFileLoader extends FileLoader
             throw new \InvalidArgumentException(sprintf('The <import> element in file "%s" must have a "resource" attribute.', $path));
         }
 
-        $type = $node->getAttribute('type');
-        $prefix = $node->getAttribute('prefix');
-        $host = $node->hasAttribute('host') ? $node->getAttribute('host') : null;
-        $schemes = $node->hasAttribute('schemes') ? preg_split('/[\s,\|]++/', $node->getAttribute('schemes'), -1, PREG_SPLIT_NO_EMPTY) : null;
-        $methods = $node->hasAttribute('methods') ? preg_split('/[\s,\|]++/', $node->getAttribute('methods'), -1, PREG_SPLIT_NO_EMPTY) : null;
-        $trailingSlashOnRoot = $node->hasAttribute('trailing-slash-on-root') ? XmlUtils::phpize($node->getAttribute('trailing-slash-on-root')) : true;
-
         list($defaults, $requirements, $options, $condition, /* $paths */, $prefixes) = $this->parseConfigs($node, $path);
+
+        $prefix = $node->getAttribute('prefix');
 
         if ('' !== $prefix && $prefixes) {
             throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "prefix" attribute and <prefix> child nodes.', $path));
@@ -168,66 +166,31 @@ class XmlFileLoader extends FileLoader
 
         $this->setCurrentDir(\dirname($path));
 
+        $type = $node->getAttribute('type');
+
         $imported = $this->import($resource, ('' !== $type ? $type : null), false, $file);
 
         if (!\is_array($imported)) {
             $imported = [$imported];
         }
 
-        foreach ($imported as $subCollection) {
-            /* @var $subCollection RouteCollection */
-            if ('' !== $prefix || !$prefixes) {
-                $subCollection->addPrefix($prefix);
-                if (!$trailingSlashOnRoot) {
-                    $rootPath = (new Route(trim(trim($prefix), '/').'/'))->getPath();
-                    foreach ($subCollection->all() as $route) {
-                        if ($route->getPath() === $rootPath) {
-                            $route->setPath(rtrim($rootPath, '/'));
-                        }
-                    }
-                }
-            } else {
-                foreach ($prefixes as $locale => $localePrefix) {
-                    $prefixes[$locale] = trim(trim($localePrefix), '/');
-                }
-                foreach ($subCollection->all() as $name => $route) {
-                    if (null === $locale = $route->getDefault('_locale')) {
-                        $subCollection->remove($name);
-                        foreach ($prefixes as $locale => $localePrefix) {
-                            $localizedRoute = clone $route;
-                            $localizedRoute->setPath($localePrefix.(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                            $localizedRoute->setDefault('_locale', $locale);
-                            $localizedRoute->setDefault('_canonical_route', $name);
-                            $subCollection->add($name.'.'.$locale, $localizedRoute);
-                        }
-                    } elseif (!isset($prefixes[$locale])) {
-                        throw new \InvalidArgumentException(sprintf('Route "%s" with locale "%s" is missing a corresponding prefix when imported in "%s".', $name, $locale, $path));
-                    } else {
-                        $route->setPath($prefixes[$locale].(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                        $subCollection->add($name, $route);
-                    }
-                }
-            }
+        $host = $node->getAttribute('host');
+        $schemes = $node->hasAttribute('schemes') ? preg_split('/[\s,\|]++/', $node->getAttribute('schemes'), -1, PREG_SPLIT_NO_EMPTY) : null;
+        $methods = $node->hasAttribute('methods') ? preg_split('/[\s,\|]++/', $node->getAttribute('methods'), -1, PREG_SPLIT_NO_EMPTY) : null;
+        $trailingSlashOnRoot = $node->hasAttribute('trailing-slash-on-root') ? XmlUtils::phpize($node->getAttribute('trailing-slash-on-root')) : true;
+        $namePrefix = $node->getAttribute('name-prefix');
 
-            if (null !== $host) {
-                $subCollection->setHost($host);
-            }
-            if (null !== $condition) {
-                $subCollection->setCondition($condition);
-            }
-            if (null !== $schemes) {
-                $subCollection->setSchemes($schemes);
-            }
-            if (null !== $methods) {
-                $subCollection->setMethods($methods);
-            }
+        foreach ($imported as $subCollection) {
+            $this->addPrefix($subCollection, $prefixes ?: $prefix, $trailingSlashOnRoot);
+
             $subCollection->addDefaults($defaults);
             $subCollection->addRequirements($requirements);
             $subCollection->addOptions($options);
-
-            if ($namePrefix = $node->getAttribute('name-prefix')) {
-                $subCollection->addNamePrefix($namePrefix);
-            }
+            $subCollection->setHost($host);
+            $subCollection->setCondition($condition);
+            $subCollection->setSchemes($schemes);
+            $subCollection->setMethods($methods);
+            $subCollection->addNamePrefix($namePrefix);
 
             $collection->addCollection($subCollection);
         }

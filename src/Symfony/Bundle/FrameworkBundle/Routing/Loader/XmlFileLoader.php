@@ -25,41 +25,61 @@ class XmlFileLoader extends BaseXmlFileLoader
 
     protected function parseRoute(RouteCollection $collection, \DOMElement $node, $path)
     {
-        if ($template = $node->getAttribute('template')) {
-            $node->removeAttribute('template');
+        if ($node->hasAttribute('template')) {
             $node->setAttribute('controller', TemplateController::class);
+            $this->setDefault($node, 'template');
 
-            $templateNode = new \DOMElement('default', $template);
-            $templateNode->setAttribute('key', 'template');
-            $node->appendChild($templateNode);
-
-            // normalize "sharedMaxAge" to "sharedAge"
-            foreach ($node->getElementsByTagNameNS(self::NAMESPACE_URI, 'default') as $n) {
-                /** @var \DOMElement $n */
-                if ($node !== $n->parentNode || 'sharedMaxAge' !== $n->getAttribute('key')) {
-                    continue;
-                }
-
-                $n->setAttribute('key', 'sharedAge');
-
-                break;
+            if ($node->hasAttribute('max-age')) {
+                $this->setDefault($node, 'max-age', 'maxAge');
             }
-        } elseif ($redirect = $node->getAttribute('redirect')) {
-            $node->removeAttribute('redirect');
+            if ($node->hasAttribute('shared-max-age')) {
+                $this->setDefault($node, 'shared-max-age', 'sharedAge');
+            }
+            if ($node->hasAttribute('private')) {
+                $this->setDefault($node, 'private');
+            }
+        } elseif ($node->hasAttribute('redirect')) {
             $node->setAttribute('controller', RedirectController::class.'::redirectAction');
+            $this->setDefault($node, 'redirect', 'route');
 
-            $redirectNode = new \DOMElement('default', $redirect);
-            $redirectNode->setAttribute('key', 'route');
-            $node->appendChild($redirectNode);
-        } elseif ($urlRedirect = $node->getAttribute('url-redirect')) {
-            $node->removeAttribute('url-redirect');
+            if ($node->hasAttribute('permanent')) {
+                $this->setDefault($node, 'permanent');
+            }
+            if ($node->hasAttribute('ignore-attributes')) {
+                $this->setDefault($node, 'ignore-attributes', 'ignoreAttributes');
+            }
+            if ($node->hasAttribute('keep-method-name')) {
+                $this->setDefault($node, 'keep-method-name', 'keepMethodName');
+            }
+        } elseif ($node->hasAttribute('url-redirect')) {
             $node->setAttribute('controller', RedirectController::class.'::urlRedirectAction');
+            $this->setDefault($node, 'url-redirect', 'path');
 
-            $urlRedirectNode = new \DOMElement('default', $urlRedirect);
-            $urlRedirectNode->setAttribute('key', $urlRedirect);
-            $node->appendChild($urlRedirectNode);
+            if ($node->hasAttribute('permanent')) {
+                $this->setDefault($node, 'permanent');
+            }
+            if ($node->hasAttribute('scheme')) {
+                $this->setDefault($node, 'scheme');
+            }
+            if ($node->hasAttribute('http-port')) {
+                $this->setDefault($node, 'http-port', 'httpPort');
+            }
+            if ($node->hasAttribute('https-port')) {
+                $this->setDefault($node, 'https-port', 'httpsPort');
+            }
+            if ($node->hasAttribute('keep-method-name')) {
+                $this->setDefault($node, 'keep-method-name', 'keepMethodName');
+            }
         }
 
         parent::parseRoute($collection, $node, $path);
+    }
+
+    private function setDefault(\DOMElement $node, string $attribute, string $defaultName = null): void
+    {
+        $redirectNode = new \DOMElement('default', $node->getAttribute($attribute));
+        $redirectNode->setAttribute('key', $defaultName ?: $attribute);
+        $node->appendChild($redirectNode);
+        $node->removeAttribute($attribute);
     }
 }

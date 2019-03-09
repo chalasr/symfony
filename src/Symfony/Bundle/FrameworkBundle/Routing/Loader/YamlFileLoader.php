@@ -24,7 +24,12 @@ class YamlFileLoader extends BaseYamlFileLoader
     protected function validate($config, $name, $path)
     {
         // remove invalid keys for values normalized below
-        unset($config['template'], $config['redirect'], $config['url_redirect']);
+        unset(
+            $config['template'], $config['max_age'], $config['shared_max_age'], $config['private'],
+            $config['redirect'], $config['permanent'], $config['ignore_attributes'], $config['keep_query_params'],
+            $config['url_redirect'], $config['scheme'], $config['http_port'], $config['https_port'],
+            $config['keep_request_method']
+        );
 
         parent::validate($config, $name, $path);
     }
@@ -32,29 +37,35 @@ class YamlFileLoader extends BaseYamlFileLoader
     protected function parseRoute(RouteCollection $collection, $name, array $config, $path)
     {
         if (isset($config['template'])) {
-            // normalize "sharedMaxAge" to "sharedAge"
-            if (isset($config['defaults']['sharedMaxAge'])) {
-                $config['defaults']['sharedAge'] = $config['defaults']['sharedMaxAge'];
-                unset($config['defaults']['sharedMaxAge']);
-            }
-
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => TemplateController::class,
                 'template' => $config['template'],
+                'maxAge' => $config['max_age'] ?? null,
+                'sharedAge' => $config['shared_max_age'] ?? null,
+                'private' => $config['private'] ?? null,
             ]);
-            unset($config['template']);
+            unset($config['template'], $config['max_age'], $config['shared_max_age'], $config['private']);
         } elseif (isset($config['redirect'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::redirectAction',
                 'route' => $config['redirect'],
+                'permanent' => $config['permanent'] ?? false,
+                'ignoreAttributes' => $config['ignore_attributes'] ?? false,
+                'keepRequestMethod' => $config['keep_request_method'] ?? false,
+                'keepQueryParams' => $config['keep_query_params'] ?? false,
             ]);
-            unset($config['redirect']);
+            unset($config['redirect'], $config['permanent'], $config['ignore_attributes'], $config['keep_request_method'], $config['keep_query_params']);
         } elseif (isset($config['url_redirect'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::urlRedirectAction',
                 'path' => $config['url_redirect'],
+                'permanent' => $config['permanent'] ?? false,
+                'scheme' => $config['scheme'] ?? null,
+                'httpPort' => $config['http_port'] ?? null,
+                'httpsPort' => $config['https_port'] ?? null,
+                'keepRequestMethod' => $config['keep_request_method'] ?? false,
             ]);
-            unset($config['url_redirect']);
+            unset($config['url_redirect'], $config['permanent'], $config['scheme'], $config['http_port'], $config['https_port'], $config['keepRequestMethod']);
         }
 
         parent::parseRoute($collection, $name, $config, $path);
