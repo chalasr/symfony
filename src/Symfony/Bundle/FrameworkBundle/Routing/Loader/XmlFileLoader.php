@@ -38,20 +38,27 @@ class XmlFileLoader extends BaseXmlFileLoader
                 ->setDefault('sharedAge', (int) $node->getAttribute('shared-max-age') ?: null)
                 ->setDefault('private', $node->hasAttribute('private') ? XmlUtils::phpize($node->getAttribute('private')) : null)
             ;
-        } elseif ($node->hasAttribute('redirect-to')) {
+
+            return;
+        }
+        if ($node->hasAttribute('redirect-to')) {
             $route
                 ->setDefault('_controller', RedirectController::class.'::redirectAction')
                 ->setDefault('route', $node->getAttribute('redirect-to'))
                 ->setDefault('permanent', self::getBooleanAttribute($node, 'permanent'))
                 ->setDefault('keepRequestMethod', self::getBooleanAttribute($node, 'keep-request-method'))
-                ->setDefault('keepQueryParams', self::getBooleanAttribute($node,'keep-query-params'))
+                ->setDefault('keepQueryParams', self::getBooleanAttribute($node, 'keep-query-params'))
             ;
-            ;
+
             if (is_string($ignoreAttributes = XmlUtils::phpize($node->getAttribute('ignore-attributes')))) {
                 $ignoreAttributes = array_map('trim', explode(',', $ignoreAttributes));
             }
+
             $route->setDefault('ignoreAttributes', $ignoreAttributes);
-        } elseif ($node->hasAttribute('redirect-to-url')) {
+
+            return;
+        }
+        if ($node->hasAttribute('redirect-to-url')) {
             $route
                 ->setDefault('_controller', RedirectController::class.'::urlRedirectAction')
                 ->setDefault('path', $node->getAttribute('redirect-to-url'))
