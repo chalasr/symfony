@@ -26,8 +26,8 @@ class YamlFileLoader extends BaseYamlFileLoader
         // remove invalid keys for values normalized below
         unset(
             $config['template'], $config['max_age'], $config['shared_max_age'], $config['private'],
-            $config['redirect'], $config['permanent'], $config['ignore_attributes'], $config['keep_query_params'],
-            $config['url_redirect'], $config['scheme'], $config['http_port'], $config['https_port'],
+            $config['redirect_to'], $config['permanent'], $config['ignore_attributes'], $config['keep_query_params'],
+            $config['redirect_to_url'], $config['scheme'], $config['http_port'], $config['https_port'],
             $config['keep_request_method']
         );
 
@@ -45,27 +45,27 @@ class YamlFileLoader extends BaseYamlFileLoader
                 'private' => $config['private'] ?? null,
             ]);
             unset($config['template'], $config['max_age'], $config['shared_max_age'], $config['private']);
-        } elseif (isset($config['redirect'])) {
+        } elseif (isset($config['redirect_to'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::redirectAction',
-                'route' => $config['redirect'],
+                'route' => $config['redirect_to'],
                 'permanent' => $config['permanent'] ?? false,
                 'ignoreAttributes' => $config['ignore_attributes'] ?? false,
                 'keepRequestMethod' => $config['keep_request_method'] ?? false,
                 'keepQueryParams' => $config['keep_query_params'] ?? false,
             ]);
-            unset($config['redirect'], $config['permanent'], $config['ignore_attributes'], $config['keep_request_method'], $config['keep_query_params']);
-        } elseif (isset($config['url_redirect'])) {
+            unset($config['redirect_to'], $config['permanent'], $config['ignore_attributes'], $config['keep_request_method'], $config['keep_query_params']);
+        } elseif (isset($config['redirect_to_url'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::urlRedirectAction',
-                'path' => $config['url_redirect'],
+                'path' => $config['redirect_to_url'],
                 'permanent' => $config['permanent'] ?? false,
                 'scheme' => $config['scheme'] ?? null,
                 'httpPort' => $config['http_port'] ?? null,
                 'httpsPort' => $config['https_port'] ?? null,
                 'keepRequestMethod' => $config['keep_request_method'] ?? false,
             ]);
-            unset($config['url_redirect'], $config['permanent'], $config['scheme'], $config['http_port'], $config['https_port'], $config['keepRequestMethod']);
+            unset($config['redirect_to_url'], $config['permanent'], $config['scheme'], $config['http_port'], $config['https_port'], $config['keepRequestMethod']);
         }
 
         parent::parseRoute($collection, $name, $config, $path);

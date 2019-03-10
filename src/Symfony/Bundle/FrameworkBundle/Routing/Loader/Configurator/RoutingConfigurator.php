@@ -47,7 +47,7 @@ class RoutingConfigurator extends BaseRoutingConfigurator
      * @param string|array $path  The path, or the localized paths of the route
      * @param string       $route The route name to redirect to
      */
-    final public function redirect(string $name, $path, string $route): RedirectRouteConfigurator
+    final public function redirectTo(string $name, $path, string $route): RedirectRouteConfigurator
     {
         return new RedirectRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'route' => $route,
@@ -59,7 +59,7 @@ class RoutingConfigurator extends BaseRoutingConfigurator
      * @param string|array $path The path, or the localized paths of the route
      * @param string       $url  The absolute path or URL to redirect to
      */
-    final public function urlRedirect(string $name, $path, string $url): UrlRedirectRouteConfigurator
+    final public function redirectToUrl(string $name, $path, string $url): UrlRedirectRouteConfigurator
     {
         return new UrlRedirectRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'path' => $url,
