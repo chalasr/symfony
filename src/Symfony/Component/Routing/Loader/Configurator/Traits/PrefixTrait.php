@@ -21,7 +21,7 @@ trait PrefixTrait
 {
     final protected function addPrefix(RouteCollection $routes, $prefix, bool $trailingSlashOnRoot)
     {
-        if (is_array($prefix)) {
+        if (\is_array($prefix)) {
             foreach ($prefix as $locale => $localePrefix) {
                 $prefix[$locale] = trim(trim($localePrefix), '/');
             }

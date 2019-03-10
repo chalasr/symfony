@@ -63,7 +63,7 @@ class RoutingConfigurator extends BaseRoutingConfigurator
     {
         return new UrlRedirectRouteConfigurator(...$this->getRouteConfiguratorArguments($name, $path, [
             'path' => $url,
-            '_controller' => RedirectController::class.'::urlRedirectAction'
+            '_controller' => RedirectController::class.'::urlRedirectAction',
         ]));
     }
 

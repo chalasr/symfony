@@ -21,7 +21,7 @@ use Symfony\Component\Routing\RouteCollection;
 trait LocalizedRouteTrait
 {
     /**
-     * Creates one or many routes
+     * Creates one or many routes.
      *
      * @param string|array $path the path, or the localized paths of the route
      *
