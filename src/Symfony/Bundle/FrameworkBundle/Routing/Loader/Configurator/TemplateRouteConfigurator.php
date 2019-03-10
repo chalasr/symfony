@@ -35,7 +35,6 @@ class TemplateRouteConfigurator extends RouteConfigurator
      */
     final public function sharedMaxAge(?int $sharedMaxAge)
     {
-        // normalize "sharedMaxAge" to "sharedAge"
         return $this->defaults(['sharedAge' => $sharedMaxAge]);
     }
 
