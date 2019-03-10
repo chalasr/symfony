@@ -50,7 +50,7 @@ class XmlFileLoader extends BaseXmlFileLoader
                 ->setDefault('keepQueryParams', self::getBooleanAttribute($node, 'keep-query-params'))
             ;
 
-            if (is_string($ignoreAttributes = XmlUtils::phpize($node->getAttribute('ignore-attributes')))) {
+            if (\is_string($ignoreAttributes = XmlUtils::phpize($node->getAttribute('ignore-attributes')))) {
                 $ignoreAttributes = array_map('trim', explode(',', $ignoreAttributes));
             }
 
