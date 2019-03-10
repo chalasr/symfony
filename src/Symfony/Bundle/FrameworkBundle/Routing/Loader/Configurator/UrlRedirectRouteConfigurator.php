@@ -23,7 +23,7 @@ class UrlRedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function permanent(bool $permanent)
+    final public function permanent(bool $permanent = true)
     {
         return $this->defaults(['permanent' => $permanent]);
     }
@@ -63,7 +63,7 @@ class UrlRedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function keepRequestMethod(bool $keepRequestMethod)
+    final public function keepRequestMethod(bool $keepRequestMethod = true)
     {
         return $this->defaults(['keepRequestMethod' => $keepRequestMethod]);
     }

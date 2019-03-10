@@ -23,7 +23,7 @@ class RedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function permanent(bool $permanent)
+    final public function permanent(bool $permanent = true)
     {
         return $this->defaults(['permanent' => $permanent]);
     }
@@ -33,7 +33,7 @@ class RedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function ignoreAttributes($ignoreAttributes)
+    final public function ignoreAttributes($ignoreAttributes = true)
     {
         return $this->defaults(['ignoreAttributes' => $ignoreAttributes]);
     }
@@ -43,7 +43,7 @@ class RedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function keepRequestMethod(bool $keepRequestMethod)
+    final public function keepRequestMethod(bool $keepRequestMethod = true)
     {
         return $this->defaults(['keepRequestMethod' => $keepRequestMethod]);
     }
@@ -53,7 +53,7 @@ class RedirectRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function keepQueryParams(bool $keepQueryParams)
+    final public function keepQueryParams(bool $keepQueryParams = true)
     {
         return $this->defaults(['keepQueryParams' => $keepQueryParams]);
     }

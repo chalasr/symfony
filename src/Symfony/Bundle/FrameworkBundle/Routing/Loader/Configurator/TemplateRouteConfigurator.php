@@ -43,7 +43,7 @@ class TemplateRouteConfigurator extends RouteConfigurator
      *
      * @return $this
      */
-    final public function private(?bool $private)
+    final public function private(?bool $private = true)
     {
         return $this->defaults(['private' => $private]);
     }
