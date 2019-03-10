@@ -69,9 +69,9 @@ class RoutingConfigurator extends BaseRoutingConfigurator
 
     private function getRouteConfiguratorArguments(string $name, $path, array $defaults): array
     {
-        $routes = $this->createRoutes($this->collection, $name, $path);
-        $routes->addDefaults($defaults);
+        $route = $this->createLocalizedRoute($this->collection, $name, $path);
+        $route->addDefaults($defaults);
 
-        return [$this->collection, $routes];
+        return [$this->collection, $route];
     }
 }

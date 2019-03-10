@@ -16,6 +16,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
+ * @author Jules Pietri <jules@heahprod.com>
  */
 trait LocalizedRouteTrait
 {
@@ -26,7 +27,7 @@ trait LocalizedRouteTrait
      *
      * @return Route|RouteCollection
      */
-    final protected function createRoutes(RouteCollection $collection, string $name, $path, string $namePrefix = '', ?array $prefixes = null)
+    final protected function createLocalizedRoute(RouteCollection $collection, string $name, $path, string $namePrefix = '', array $prefixes = null)
     {
         $paths = [];
 

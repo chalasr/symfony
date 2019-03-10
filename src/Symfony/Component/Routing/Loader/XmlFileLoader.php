@@ -130,14 +130,14 @@ class XmlFileLoader extends FileLoader
             throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "path" attribute and <path> child nodes.', $filepath));
         }
 
-        $routes = $this->createRoutes($collection, $id, $paths ?: $path);
-        $routes->addDefaults($defaults);
-        $routes->addRequirements($requirements);
-        $routes->addOptions($options);
-        $routes->setHost($node->getAttribute('host'));
-        $routes->setSchemes($schemes);
-        $routes->setMethods($methods);
-        $routes->setCondition($condition);
+        $route = $this->createLocalizedRoute($collection, $id, $paths ?: $path);
+        $route->addDefaults($defaults);
+        $route->addRequirements($requirements);
+        $route->addOptions($options);
+        $route->setHost($node->getAttribute('host'));
+        $route->setSchemes($schemes);
+        $route->setMethods($methods);
+        $route->setCondition($condition);
     }
 
     /**

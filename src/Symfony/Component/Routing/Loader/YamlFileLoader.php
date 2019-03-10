@@ -126,14 +126,14 @@ class YamlFileLoader extends FileLoader
             $defaults['_controller'] = $config['controller'];
         }
 
-        $routes = $this->createRoutes($collection, $name, $config['path']);
-        $routes->addDefaults($defaults);
-        $routes->addRequirements($requirements);
-        $routes->addOptions($config['options'] ?? []);
-        $routes->setHost($config['host'] ?? '');
-        $routes->setSchemes($config['schemes'] ?? []);
-        $routes->setMethods($config['methods'] ?? []);
-        $routes->setCondition($config['condition'] ?? null);
+        $route = $this->createLocalizedRoute($collection, $name, $config['path']);
+        $route->addDefaults($defaults);
+        $route->addRequirements($requirements);
+        $route->addOptions($config['options'] ?? []);
+        $route->setHost($config['host'] ?? '');
+        $route->setSchemes($config['schemes'] ?? []);
+        $route->setMethods($config['methods'] ?? []);
+        $route->setCondition($config['condition'] ?? null);
     }
 
     /**

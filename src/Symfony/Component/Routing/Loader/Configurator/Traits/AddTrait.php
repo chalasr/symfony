@@ -37,9 +37,9 @@ trait AddTrait
     final public function add(string $name, $path): RouteConfigurator
     {
         $parentConfigurator = $this instanceof CollectionConfigurator ? $this : ($this instanceof RouteConfigurator ? $this->parentConfigurator : null);
-        $routes = $this->createRoutes($this->collection, $name, $path, $this->name, $this->prefixes);
+        $route = $this->createLocalizedRoute($this->collection, $name, $path, $this->name, $this->prefixes);
 
-        return new RouteConfigurator($this->collection, $routes, $this->name, $parentConfigurator, $this->prefixes);
+        return new RouteConfigurator($this->collection, $route, $this->name, $parentConfigurator, $this->prefixes);
     }
 
     /**
