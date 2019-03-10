@@ -21,15 +21,18 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class YamlFileLoader extends BaseYamlFileLoader
 {
+    private static $availableKeys = [
+        'template' => ['template', 'max_age', 'shared_max_age', 'private'],
+        'redirect_to' => ['redirect_to', 'permanent', 'ignore_attributes', 'keep_request_method', 'keep_query_params'],
+        'redirect_to_url' => ['redirect_to_url', 'permanent', 'scheme', 'http_port', 'https_port', 'keep_request_method'],
+    ];
+
     protected function validate($config, $name, $path)
     {
         // remove invalid keys for values normalized below
-        unset(
-            $config['template'], $config['max_age'], $config['shared_max_age'], $config['private'],
-            $config['redirect_to'], $config['permanent'], $config['ignore_attributes'], $config['keep_query_params'],
-            $config['redirect_to_url'], $config['scheme'], $config['http_port'], $config['https_port'],
-            $config['keep_request_method']
-        );
+        foreach (array_unique(array_merge(...array_values(self::$availableKeys))) as $key) {
+            unset($config[$key]);
+        }
 
         parent::validate($config, $name, $path);
     }
@@ -44,7 +47,9 @@ class YamlFileLoader extends BaseYamlFileLoader
                 'sharedAge' => $config['shared_max_age'] ?? null,
                 'private' => $config['private'] ?? null,
             ]);
-            unset($config['template'], $config['max_age'], $config['shared_max_age'], $config['private']);
+            foreach (self::$availableKeys['template'] as $key) {
+                unset($config[$key]);
+            }
         } elseif (isset($config['redirect_to'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::redirectAction',
@@ -54,7 +59,9 @@ class YamlFileLoader extends BaseYamlFileLoader
                 'keepRequestMethod' => $config['keep_request_method'] ?? false,
                 'keepQueryParams' => $config['keep_query_params'] ?? false,
             ]);
-            unset($config['redirect_to'], $config['permanent'], $config['ignore_attributes'], $config['keep_request_method'], $config['keep_query_params']);
+            foreach (self::$availableKeys['redirect_to'] as $key) {
+                unset($config[$key]);
+            }
         } elseif (isset($config['redirect_to_url'])) {
             $config['defaults'] = array_merge($config['defaults'] ?? [], [
                 '_controller' => RedirectController::class.'::urlRedirectAction',
@@ -65,7 +72,9 @@ class YamlFileLoader extends BaseYamlFileLoader
                 'httpsPort' => $config['https_port'] ?? null,
                 'keepRequestMethod' => $config['keep_request_method'] ?? false,
             ]);
-            unset($config['redirect_to_url'], $config['permanent'], $config['scheme'], $config['http_port'], $config['https_port'], $config['keepRequestMethod']);
+            foreach (self::$availableKeys['redirect_to_url'] as $key) {
+                unset($config[$key]);
+            }
         }
 
         parent::parseRoute($collection, $name, $config, $path);
