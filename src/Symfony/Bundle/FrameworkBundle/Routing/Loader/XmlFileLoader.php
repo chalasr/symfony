@@ -13,6 +13,7 @@ namespace Symfony\Bundle\FrameworkBundle\Routing\Loader;
 
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Bundle\FrameworkBundle\Controller\TemplateController;
+use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Routing\Loader\XmlFileLoader as BaseXmlFileLoader;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -25,61 +26,37 @@ class XmlFileLoader extends BaseXmlFileLoader
 
     protected function parseRoute(RouteCollection $collection, \DOMElement $node, $path)
     {
-        if ($node->hasAttribute('template')) {
-            $node->setAttribute('controller', TemplateController::class);
-            $this->setDefault($node, 'template');
-
-            if ($node->hasAttribute('max-age')) {
-                $this->setDefault($node, 'max-age', 'maxAge');
-            }
-            if ($node->hasAttribute('shared-max-age')) {
-                $this->setDefault($node, 'shared-max-age', 'sharedAge');
-            }
-            if ($node->hasAttribute('private')) {
-                $this->setDefault($node, 'private');
-            }
-        } elseif ($node->hasAttribute('redirect')) {
-            $node->setAttribute('controller', RedirectController::class.'::redirectAction');
-            $this->setDefault($node, 'redirect', 'route');
-
-            if ($node->hasAttribute('permanent')) {
-                $this->setDefault($node, 'permanent');
-            }
-            if ($node->hasAttribute('ignore-attributes')) {
-                $this->setDefault($node, 'ignore-attributes', 'ignoreAttributes');
-            }
-            if ($node->hasAttribute('keep-method-name')) {
-                $this->setDefault($node, 'keep-method-name', 'keepMethodName');
-            }
-        } elseif ($node->hasAttribute('url-redirect')) {
-            $node->setAttribute('controller', RedirectController::class.'::urlRedirectAction');
-            $this->setDefault($node, 'url-redirect', 'path');
-
-            if ($node->hasAttribute('permanent')) {
-                $this->setDefault($node, 'permanent');
-            }
-            if ($node->hasAttribute('scheme')) {
-                $this->setDefault($node, 'scheme');
-            }
-            if ($node->hasAttribute('http-port')) {
-                $this->setDefault($node, 'http-port', 'httpPort');
-            }
-            if ($node->hasAttribute('https-port')) {
-                $this->setDefault($node, 'https-port', 'httpsPort');
-            }
-            if ($node->hasAttribute('keep-method-name')) {
-                $this->setDefault($node, 'keep-method-name', 'keepMethodName');
-            }
-        }
-
         parent::parseRoute($collection, $node, $path);
-    }
 
-    private function setDefault(\DOMElement $node, string $attribute, string $defaultName = null): void
-    {
-        $redirectNode = new \DOMElement('default', $node->getAttribute($attribute));
-        $redirectNode->setAttribute('key', $defaultName ?: $attribute);
-        $node->appendChild($redirectNode);
-        $node->removeAttribute($attribute);
+        $route = $collection->get($node->getAttribute(('id')));
+
+        if ($node->hasAttribute('template')) {
+            $route
+                ->setDefault('_controller', TemplateController::class)
+                ->setDefault('template', $node->getAttribute('template'))
+                ->setDefault('maxAge', (int) $node->getAttribute('max-age') ?: null)
+                ->setDefault('sharedAge', (int) $node->getAttribute('shared-max-age') ?: null)
+                ->setDefault('private', $node->hasAttribute('private') ? XmlUtils::phpize($node->getAttribute('private')) : null)
+            ;
+        } elseif ($node->hasAttribute('redirect-to')) {
+            $route
+                ->setDefault('_controller', RedirectController::class.'::redirectAction')
+                ->setDefault('route', $node->getAttribute('redirect-to'))
+                ->setDefault('permanent', $node->hasAttribute('permanent') ? XmlUtils::phpize($node->getAttribute('permanent')) : null)
+                ->setDefault('ignoreAttributes', $node->getAttribute('ignore-attributes') ?: false)
+                ->setDefault('keepMethodName', $node->getAttribute('keep-method-name') ?: false)
+                ->setDefault('keepQueryParams', $node->getAttribute('keep-query-params') ?: false)
+            ;
+        } elseif ($node->hasAttribute('redirect-to-url')) {
+            $route
+                ->setDefault('_controller', RedirectController::class.'::urlRedirectAction')
+                ->setDefault('path', $node->getAttribute('redirect-to-url'))
+                ->setDefault('permanent', $node->hasAttribute('permanent') ? XmlUtils::phpize($node->getAttribute('permanent')) : null)
+                ->setDefault('scheme', $node->getAttribute('scheme'))
+                ->setDefault('httpPort', $node->getAttribute('http-port') ?: null)
+                ->setDefault('httpsPort', $node->getAttribute('https-port') ?: null)
+                ->setDefault('keepMethodName', $node->getAttribute('keep-method-name') ?: false)
+            ;
+        }
     }
 }
