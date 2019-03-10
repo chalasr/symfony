@@ -12,12 +12,12 @@
           <xsd:attribute name="max-age" type="xsd:int" />
           <xsd:attribute name="shared-max-age" type="xsd:int" />
           <xsd:attribute name="private" type="xsd:boolean" />
-          <xsd:attribute name="redirect" type="xsd:string" />
+          <xsd:attribute name="redirect-to" type="xsd:string" />
           <xsd:attribute name="permanent" type="xsd:boolean" />
-          <xsd:attribute name="ignore-attributes" type="xsd:boolean" />
+          <xsd:attribute name="ignore-attributes" type="xsd:string" />
           <xsd:attribute name="keep-request-method" type="xsd:boolean" />
           <xsd:attribute name="keep-query-params" type="xsd:boolean" />
-          <xsd:attribute name="url-redirect" type="xsd:string" />
+          <xsd:attribute name="redirect-to-url" type="xsd:string" />
           <xsd:attribute name="scheme" type="xsd:string" />
           <xsd:attribute name="http-port" type="xsd:int" />
           <xsd:attribute name="https-port" type="xsd:int" />

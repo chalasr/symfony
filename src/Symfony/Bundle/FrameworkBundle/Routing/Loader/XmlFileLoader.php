@@ -22,7 +22,7 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class XmlFileLoader extends BaseXmlFileLoader
 {
-    const SCHEME_PATH = __DIR__.'/../../Resources/config/schema/routing-1.0.xsd';
+    public const SCHEME_PATH = __DIR__.'/../../Resources/config/schema/routing-1.0.xsd';
 
     protected function parseRoute(RouteCollection $collection, \DOMElement $node, $path)
     {
@@ -42,21 +42,30 @@ class XmlFileLoader extends BaseXmlFileLoader
             $route
                 ->setDefault('_controller', RedirectController::class.'::redirectAction')
                 ->setDefault('route', $node->getAttribute('redirect-to'))
-                ->setDefault('permanent', $node->hasAttribute('permanent') ? XmlUtils::phpize($node->getAttribute('permanent')) : null)
-                ->setDefault('ignoreAttributes', $node->getAttribute('ignore-attributes') ?: false)
-                ->setDefault('keepMethodName', $node->getAttribute('keep-method-name') ?: false)
-                ->setDefault('keepQueryParams', $node->getAttribute('keep-query-params') ?: false)
+                ->setDefault('permanent', self::getBooleanAttribute($node, 'permanent'))
+                ->setDefault('keepRequestMethod', self::getBooleanAttribute($node, 'keep-request-method'))
+                ->setDefault('keepQueryParams', self::getBooleanAttribute($node,'keep-query-params'))
             ;
+            ;
+            if (is_string($ignoreAttributes = XmlUtils::phpize($node->getAttribute('ignore-attributes')))) {
+                $ignoreAttributes = array_map('trim', explode(',', $ignoreAttributes));
+            }
+            $route->setDefault('ignoreAttributes', $ignoreAttributes);
         } elseif ($node->hasAttribute('redirect-to-url')) {
             $route
                 ->setDefault('_controller', RedirectController::class.'::urlRedirectAction')
                 ->setDefault('path', $node->getAttribute('redirect-to-url'))
-                ->setDefault('permanent', $node->hasAttribute('permanent') ? XmlUtils::phpize($node->getAttribute('permanent')) : null)
+                ->setDefault('permanent', self::getBooleanAttribute($node, 'permanent'))
                 ->setDefault('scheme', $node->getAttribute('scheme'))
-                ->setDefault('httpPort', $node->getAttribute('http-port') ?: null)
-                ->setDefault('httpsPort', $node->getAttribute('https-port') ?: null)
-                ->setDefault('keepMethodName', $node->getAttribute('keep-method-name') ?: false)
+                ->setDefault('httpPort', (int) $node->getAttribute('http-port') ?: null)
+                ->setDefault('httpsPort', (int) $node->getAttribute('https-port') ?: null)
+                ->setDefault('keepRequestMethod', self::getBooleanAttribute($node, 'keep-request-method'))
             ;
         }
+    }
+
+    private static function getBooleanAttribute(\DOMElement $node, string $attribute): bool
+    {
+        return $node->hasAttribute($attribute) ? XmlUtils::phpize($node->getAttribute($attribute)) : false;
     }
 }
