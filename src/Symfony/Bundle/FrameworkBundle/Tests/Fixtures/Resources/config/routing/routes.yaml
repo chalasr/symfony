@@ -1,0 +1,31 @@
+template_route:
+    path: /static
+    template: static.html.twig
+    max_age: 300
+    shared_max_age: 100
+    private: true
+    methods: GET
+    options: { utf8: true }
+    condition: abc
+
+redirect_to_route:
+    path: /redirect
+    redirect_to: target_route
+    permanent: true
+    ignore_attributes: ['attr', 'ibutes']
+    keep_request_method: true
+    keep_query_params: true
+    schemes: http
+    host: legacy
+    options: { utf8: true }
+
+redirect_to_url_route:
+    path: /redirect-url
+    redirect_to_url: /url-target
+    permanent: true
+    scheme: http
+    http_port: 1
+    https_port: 2
+    keep_request_method: true
+    host: legacy
+    options: { utf8: true }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing">
+
+    <route id="template_route"
+           path="/static"
+           template="static.html.twig"
+           max-age="300"
+           shared-max-age="100"
+           private="true"
+           methods="GET">
+        <option key="utf8">true</option>
+        <condition>abc</condition>
+    </route>
+    <route id="redirect_to_route"
+           path="/redirect"
+           redirect-to="target_route"
+           permanent="true"
+           ignore-attributes="attr, ibutes"
+           keep-request-method="true"
+           keep-query-params="true"
+           schemes="http"
+           host="legacy">
+        <option key="utf8">true</option>
+    </route>
+    <route id="redirect_to_url_route"
+           path="/redirect-url"
+           redirect-to-url="/url-target"
+           permanent="true"
+           scheme="http"
+           http-port="1"
+           https-port="2"
+           keep-request-method="true"
+           host="legacy">
+        <option key="utf8">true</option>
+    </route>
+</routes>
