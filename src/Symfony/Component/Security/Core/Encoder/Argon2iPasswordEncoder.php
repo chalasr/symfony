@@ -66,16 +66,10 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
             return !$this->isPasswordTooLong($raw) && password_verify($raw, $encoded);
         }
         if (\function_exists('sodium_crypto_pwhash_str_verify')) {
-            $valid = !$this->isPasswordTooLong($raw) && \sodium_crypto_pwhash_str_verify($encoded, $raw);
-            \sodium_memzero($raw);
-
-            return $valid;
+            return !$this->isPasswordTooLong($raw) && \sodium_crypto_pwhash_str_verify($encoded, $raw);
         }
         if (\extension_loaded('libsodium')) {
-            $valid = !$this->isPasswordTooLong($raw) && \Sodium\crypto_pwhash_str_verify($encoded, $raw);
-            \Sodium\memzero($raw);
-
-            return $valid;
+            return !$this->isPasswordTooLong($raw) && \Sodium\crypto_pwhash_str_verify($encoded, $raw);
         }
 
         throw new \LogicException('Argon2i algorithm is not supported. Please install the libsodium extension or upgrade to PHP 7.2+.');
@@ -88,25 +82,19 @@ class Argon2iPasswordEncoder extends BasePasswordEncoder implements SelfSaltingE
 
     private function encodePasswordSodiumFunction($raw)
     {
-        $hash = \sodium_crypto_pwhash_str(
+        return \sodium_crypto_pwhash_str(
             $raw,
             \SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
             \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
         );
-        \sodium_memzero($raw);
-
-        return $hash;
     }
 
     private function encodePasswordSodiumExtension($raw)
     {
-        $hash = \Sodium\crypto_pwhash_str(
+        return \Sodium\crypto_pwhash_str(
             $raw,
             \Sodium\CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
             \Sodium\CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
         );
-        \Sodium\memzero($raw);
-
-        return $hash;
     }
 }
