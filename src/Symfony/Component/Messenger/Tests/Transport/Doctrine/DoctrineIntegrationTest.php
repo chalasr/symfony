@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Messenger\Tests\Transport\Doctrine;
 
+use Doctrine\DBAL\Driver\PDOConnection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Tests\Fixtures\DummyMessage;
@@ -40,7 +41,7 @@ class DoctrineIntegrationTest extends TestCase
         if ($dsn = getenv('MESSENGER_DOCTRINE_DSN')) {
             $this->driverConnection = DriverManager::getConnection(['url' => $dsn]);
         } else {
-            $this->driverConnection = DriverManager::getConnection(['pdo' => new \PDO('sqlite:'.sys_get_temp_dir().'/symfony.messenger.sqlite')]);
+            $this->driverConnection = DriverManager::getConnection(['pdo' => new PDOConnection('sqlite:'.sys_get_temp_dir().'/symfony.messenger.sqlite')]);
         }
         $this->connection = new Connection([], $this->driverConnection);
         // call send to auto-setup the table
