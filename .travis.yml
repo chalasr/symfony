@@ -130,7 +130,7 @@ before_install:
               rm ~/.pearrc /tmp/pear 2>/dev/null || true
               mkdir -p $ext_cache
               echo yes | pecl install -f $ext_name &&
-              cp $ext_dir/$ext_so $ext_cache
+              ln -s $ext_dir/$ext_so $ext_cache
           fi
       }
       export -f tpecl
