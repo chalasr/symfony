@@ -139,6 +139,24 @@ Security
    instead.
  * The `getReachableRoles()` method of the `RoleHierarchyInterface` is deprecated and will be removed in 5.0.
    Role hierarchies must implement the `getReachableRoleNames()` method instead and return roles as strings.
+ * The `RoleHierarchyInterface` methods are now virtual. If you are used to mock it for testing purpose, 
+   write a dummy implementation instead.
+
+   Before:
+   ```php
+   $roleHierarchy = $this->createMock(RoleHierarchyInterface::class);
+   $roleHierarchy->method('getReachableRoles')->willReturn([new Role('FOO']);
+   ```
+
+   After:
+   ```php
+   $roleHierarchy = new class implements RoleHierarchyInterface {
+       public function getReachableRoleNames(array $roles)
+       {
+           return ['FOO'];
+       }
+   }
+   ```
  * The `getRoles()` method of the `TokenInterface` is deprecated. Tokens must implement the `getRoleNames()`
    method instead and return roles as strings.
  * The `ListenerInterface` is deprecated, turn your listeners into callables instead.

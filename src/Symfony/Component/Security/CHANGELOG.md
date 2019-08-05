@@ -10,6 +10,8 @@ CHANGELOG
    instead.
  * The `getReachableRoles()` method of the `RoleHierarchyInterface` is deprecated and will be removed in 5.0.
    Role hierarchies must implement the `getReachableRoleNames()` method instead and return roles as strings.
+ * [BC BREAK] Mocking the `RoleHierarchyInterface` methods for testing purpose is not possible
+   anymore as those are virtual, write a dummy implementation instead.
  * The `getRoles()` method of the `TokenInterface` is deprecated. Tokens must implement the `getRoleNames()`
    method instead and return roles as strings.
  * Made the `serialize()` and `unserialize()` methods of `AbstractToken` and
