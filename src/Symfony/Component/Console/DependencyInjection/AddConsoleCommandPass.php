@@ -67,6 +67,10 @@ class AddConsoleCommandPass implements CompilerPassInterface
                 $serviceIds[] = $id;
 
                 continue;
+            } elseif (($r ?? false) && !$r->getConstructor()->getNumberOfRequiredParameters()) {
+                // Prevent convention-based registration for lazy commands with no constructor, avoiding wrong deprecation notices with framework-bundle:3.4 and console:4.x
+                $serviceIds[] = 'console.command.'.strtolower(str_replace('\\', '_', $class));
+                continue;
             }
 
             unset($tags[0]);
