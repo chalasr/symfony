@@ -15,8 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\SecurityBundle\Command\UserPasswordEncoderCommand;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Security\Core\Encoder\Argon2iPasswordEncoder;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\Pbkdf2PasswordEncoder;
@@ -55,9 +53,6 @@ class UserPasswordEncoderCommandTest extends AbstractWebTestCase
         $this->assertEquals($statusCode, 1);
     }
 
-    /**
-     * @group legacy
-     */
     public function testEncodePasswordBcrypt()
     {
         $this->setupBcrypt();
@@ -70,18 +65,15 @@ class UserPasswordEncoderCommandTest extends AbstractWebTestCase
         $output = $this->passwordEncoderCommandTester->getDisplay();
         $this->assertStringContainsString('Password encoding succeeded', $output);
 
-        $encoder = new BCryptPasswordEncoder(17);
+        $encoder = new NativePasswordEncoder(null, null, 17, \PASSWORD_BCRYPT);
         preg_match('# Encoded password\s{1,}([\w+\/$.]+={0,2})\s+#', $output, $matches);
         $hash = $matches[1];
         $this->assertTrue($encoder->isPasswordValid($hash, 'password', null));
     }
 
-    /**
-     * @group legacy
-     */
     public function testEncodePasswordArgon2i()
     {
-        if (!Argon2iPasswordEncoder::isSupported()) {
+        if (!($sodium = (SodiumPasswordEncoder::isSupported()) && !\defined('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13')) && !\defined('PASSWORD_ARGON2I')) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
         $this->setupArgon2i();
@@ -94,8 +86,8 @@ class UserPasswordEncoderCommandTest extends AbstractWebTestCase
         $output = $this->passwordEncoderCommandTester->getDisplay();
         $this->assertStringContainsString('Password encoding succeeded', $output);
 
-        $encoder = new Argon2iPasswordEncoder();
-        preg_match('#  Encoded password\s+(\$argon2id?\$[\w,=\$+\/]+={0,2})\s+#', $output, $matches);
+        $encoder = $sodium ? new SodiumPasswordEncoder() : new NativePasswordEncoder(null, null, null, \PASSWORD_ARGON2I);
+        preg_match('#  Encoded password\s+(\$argon2i?\$[\w,=\$+\/]+={0,2})\s+#', $output, $matches);
         $hash = $matches[1];
         $this->assertTrue($encoder->isPasswordValid($hash, 'password', null));
     }
@@ -195,12 +187,9 @@ class UserPasswordEncoderCommandTest extends AbstractWebTestCase
         $this->assertStringNotContainsString(' Generated salt ', $this->passwordEncoderCommandTester->getDisplay());
     }
 
-    /**
-     * @group legacy
-     */
     public function testEncodePasswordArgon2iOutput()
     {
-        if (!Argon2iPasswordEncoder::isSupported()) {
+        if (!($sodium = (SodiumPasswordEncoder::isSupported()) && !\defined('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13')) && !\defined('PASSWORD_ARGON2I')) {
             $this->markTestSkipped('Argon2i algorithm not available.');
         }
 

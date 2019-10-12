@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Security\Core\Encoder;
 
+use Symfony\Component\Security\Core\Exception\LogicException;
+
 /**
  * A generic encoder factory implementation.
  *
@@ -114,11 +116,15 @@ class EncoderFactory implements EncoderFactoryInterface
                     ],
                 ];
 
-            /* @deprecated since Symfony 4.3 */
             case 'bcrypt':
                 return [
-                    'class' => BCryptPasswordEncoder::class,
-                    'arguments' => [$config['cost']],
+                    'class' => NativePasswordEncoder::class,
+                    'arguments' => [
+                        $config['time_cost'] ?? null,
+                        (($config['memory_cost'] ?? 0) << 10) ?: null,
+                        $config['cost'] ?? null,
+                        \PASSWORD_BCRYPT,
+                    ],
                 ];
 
             case 'native':
@@ -140,14 +146,52 @@ class EncoderFactory implements EncoderFactoryInterface
                     ],
                 ];
 
-            /* @deprecated since Symfony 4.3 */
             case 'argon2i':
+                if (SodiumPasswordEncoder::isSupported() && !\defined('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13')) {
+                    return [
+                        'class' => SodiumPasswordEncoder::class,
+                        'arguments' => [
+                            $config['time_cost'] ?? null,
+                            (($config['memory_cost'] ?? 0) << 10) ?: null,
+                        ],
+                    ];
+                }
+
+                if (!\defined('PASSWORD_ARGON2I')) {
+                    throw new LogicException('Algorithm "argon2i" is not available. You should either install the sodium extension, upgrade to PHP 7.2+ or use a different encoder.');
+                }
+
                 return [
-                    'class' => Argon2iPasswordEncoder::class,
+                    'class' => NativePasswordEncoder::class,
                     'arguments' => [
-                        $config['memory_cost'],
-                        $config['time_cost'],
-                        $config['threads'],
+                        $config['time_cost'] ?? null,
+                        (($config['memory_cost'] ?? 0) << 10) ?: null,
+                        $config['cost'] ?? null,
+                        \PASSWORD_ARGON2I,
+                    ],
+                ];
+            case 'argon2id':
+                if (($hasSodium = SodiumPasswordEncoder::isSupported()) && \defined('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13')) {
+                    return [
+                        'class' => SodiumPasswordEncoder::class,
+                        'arguments' => [
+                            $config['time_cost'] ?? null,
+                            (($config['memory_cost'] ?? 0) << 10) ?: null,
+                        ],
+                    ];
+                }
+
+                if (!\defined('PASSWORD_ARGON2ID')) {
+                    throw new LogicException(sprintf('Algorithm "argon2id" is not available. You should either %s sodium extension, upgrade to PHP 7.3+ or use a different encoder.', $hasSodium ? 'upgrade your' : 'install the'));
+                }
+
+                return [
+                    'class' => NativePasswordEncoder::class,
+                    'arguments' => [
+                        $config['time_cost'] ?? null,
+                        (($config['memory_cost'] ?? 0) << 10) ?: null,
+                        $config['cost'] ?? null,
+                        \PASSWORD_ARGON2ID,
                     ],
                 ];
         }
