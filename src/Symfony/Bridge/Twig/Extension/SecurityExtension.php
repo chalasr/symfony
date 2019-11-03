@@ -12,6 +12,8 @@
 namespace Symfony\Bridge\Twig\Extension;
 
 use Symfony\Component\Security\Acl\Voter\FieldVote;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Twig\Extension\AbstractExtension;
@@ -27,10 +29,12 @@ use Twig\TwigFunction;
 class SecurityExtension extends AbstractExtension
 {
     private $securityChecker;
+    private $tokenStorage;
 
-    public function __construct(AuthorizationCheckerInterface $securityChecker = null)
+    public function __construct(AuthorizationCheckerInterface $securityChecker = null, TokenStorageInterface $tokenStorage = null)
     {
         $this->securityChecker = $securityChecker;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function isGranted($role, $object = null, $field = null)
@@ -43,11 +47,20 @@ class SecurityExtension extends AbstractExtension
             $object = new FieldVote($object, $field);
         }
 
+        if ('ROLE_PREVIOUS_ADMIN' === $role) {
+            @trigger_error('')
+        }
+
         try {
             return $this->securityChecker->isGranted($role, $object);
         } catch (AuthenticationCredentialsNotFoundException $e) {
             return false;
         }
+    }
+
+    public function isImpersonating(): bool
+    {
+        return $this->tokenStorage ? $this->tokenStorage->getToken() instanceof SwitchUserToken : false;
     }
 
     /**
@@ -59,6 +72,7 @@ class SecurityExtension extends AbstractExtension
     {
         return [
             new TwigFunction('is_granted', [$this, 'isGranted']),
+            new TwigFunction('is_impersonating', [$this, 'isImpersonating']),
         ];
     }
 
