@@ -19,6 +19,7 @@ require $vendor.'/vendor/autoload.php';
 
         return 0;
     })
+    ->run()
 ;
 ?>
 --EXPECTF--

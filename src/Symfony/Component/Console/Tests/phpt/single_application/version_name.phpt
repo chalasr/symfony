@@ -19,6 +19,7 @@ require $vendor.'/vendor/autoload.php';
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         return 0;
     })
+    ->run()
 ;
 ?>
 --EXPECTF--
