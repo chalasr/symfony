@@ -17,7 +17,8 @@
     ],
     "require": {
         "php": "^7.2.5",
-        "symfony/http-client": "^4.3|5.0",
+        "ext-json": "*",
+        "async-aws/sqs": "^0.4",
         "symfony/messenger": "^4.3|^5.0",
         "symfony/service-contracts": "^1.1|^2"
     },
