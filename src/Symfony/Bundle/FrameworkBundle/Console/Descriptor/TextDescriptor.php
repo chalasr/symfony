@@ -61,11 +61,11 @@ class TextDescriptor extends Descriptor
                 $route->getMethods() ? implode('|', $route->getMethods()) : 'ANY',
                 $route->getSchemes() ? implode('|', $route->getSchemes()) : 'ANY',
                 '' !== $route->getHost() ? $route->getHost() : 'ANY',
-                $this->formatControllerLink($controller, $route->getPath()),
+                $this->formatControllerLink($controller, $route->getPath(), $options['container'] ?? null),
             ];
 
             if ($showControllers) {
-                $row[] = $controller ? $this->formatControllerLink($controller, $this->formatCallable($controller)) : '';
+                $row[] = $controller ? $this->formatControllerLink($controller, $this->formatCallable($controller), $options['container'] ?? null) : '';
             }
 
             $tableRows[] = $row;
@@ -497,7 +497,7 @@ class TextDescriptor extends Descriptor
         return trim($configAsString);
     }
 
-    private function formatControllerLink($controller, string $anchorText): string
+    private function formatControllerLink($controller, string $anchorText, callable $getContainer = null): string
     {
         if (null === $this->fileLinkFormatter) {
             return $anchorText;
@@ -518,7 +518,32 @@ class TextDescriptor extends Descriptor
                 $r = new \ReflectionFunction($controller);
             }
         } catch (\ReflectionException $e) {
-            return $anchorText;
+            $id = $controller;
+            $method = '__invoke';
+
+            if ($pos = strpos($controller, '::')) {
+                $id = substr($controller, 0, $pos);
+                $method = substr($controller, $pos + 2, \strlen($controller));
+            }
+
+            if ($getContainer && ($container = $getContainer()) && $container->has($id)) {
+                try {
+                    $definition = $container->findDefinition($id);
+                    $factory = $definition->getFactory();
+                    if (($factory[1] ?? null) && !$factory[0] instanceof Definition) {
+                        $r = new \ReflectionMethod($factory[0], $factory[1]);
+                    } elseif (\is_string($factory)) {
+                        $r = new \ReflectionFunction($factory);
+                    } elseif (($class = $definition->getClass()) && method_exists($class, $method)) {
+                        $r = new \ReflectionMethod($class, $method);
+                    }
+                } catch (\ReflectionException $e) {
+                }
+            }
+
+            if (!($r ?? null)) {
+                return $anchorText;
+            }
         }
 
         $fileLink = $this->fileLinkFormatter->format($r->getFileName(), $r->getStartLine());

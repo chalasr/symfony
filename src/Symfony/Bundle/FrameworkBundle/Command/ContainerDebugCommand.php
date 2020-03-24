@@ -36,12 +36,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
  */
 class ContainerDebugCommand extends Command
 {
-    protected static $defaultName = 'debug:container';
+    use BuildDebugContainerTrait;
 
-    /**
-     * @var ContainerBuilder|null
-     */
-    protected $containerBuilder;
+    protected static $defaultName = 'debug:container';
 
     /**
      * {@inheritdoc}
@@ -217,33 +214,6 @@ EOF
         }
     }
 
-    /**
-     * Loads the ContainerBuilder from the cache.
-     *
-     * @throws \LogicException
-     */
-    protected function getContainerBuilder(): ContainerBuilder
-    {
-        if ($this->containerBuilder) {
-            return $this->containerBuilder;
-        }
-
-        $kernel = $this->getApplication()->getKernel();
-
-        if (!$kernel->isDebug() || !(new ConfigCache($kernel->getContainer()->getParameter('debug.container.dump'), true))->isFresh()) {
-            $buildContainer = \Closure::bind(function () { return $this->buildContainer(); }, $kernel, \get_class($kernel));
-            $container = $buildContainer();
-            $container->getCompilerPassConfig()->setRemovingPasses([]);
-            $container->getCompilerPassConfig()->setAfterRemovingPasses([]);
-            $container->compile();
-        } else {
-            (new XmlFileLoader($container = new ContainerBuilder(), new FileLocator()))->load($kernel->getContainer()->getParameter('debug.container.dump'));
-            $locatorPass = new ServiceLocatorTagPass();
-            $locatorPass->process($container);
-        }
-
-        return $this->containerBuilder = $container;
-    }
 
     private function findProperServiceName(InputInterface $input, SymfonyStyle $io, ContainerBuilder $builder, string $name, bool $showHidden): string
     {
