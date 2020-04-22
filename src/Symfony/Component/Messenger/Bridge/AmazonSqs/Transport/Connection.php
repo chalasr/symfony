@@ -221,7 +221,7 @@ class Connection
 
         $parameters = ['QueueName' => $this->configuration['queue_name']];
 
-        if ($this->isFifoQueue($this->configuration['queue_name'])) {
+        if (self::isFifoQueue($this->configuration['queue_name'])) {
             $parameters['FifoQueue'] = true;
         }
 
@@ -268,7 +268,7 @@ class Connection
             'DelaySeconds' => $delay,
         ];
 
-        if ($this->isFifoQueue($this->configuration['queue_name'])) {
+        if (self::isFifoQueue($this->configuration['queue_name'])) {
             $parameters['MessageGroupId'] = null !== $messageGroupId ? $messageGroupId : __METHOD__;
             $parameters['MessageDeduplicationId'] = null !== $messageDeduplicationId ? $messageDeduplicationId : sha1($messageBody);
         }
