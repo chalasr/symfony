@@ -784,6 +784,9 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         $this->assertEquals('FooBundle', $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question));
     }
 
+    /**
+     * @group legacy
+     */
     public function testDisableSttby()
     {
         if (!Terminal::hasSttyAvailable()) {
@@ -807,7 +810,7 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         try {
             $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question);
         } finally {
-            $reflection = new \ReflectionProperty(QuestionHelper::class, 'stty');
+            $reflection = new \ReflectionProperty(Terminal::class, 'stty');
             $reflection->setAccessible(true);
             $reflection->setValue(null, true);
         }

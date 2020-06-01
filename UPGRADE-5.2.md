@@ -1,6 +1,11 @@
 UPGRADE FROM 5.1 to 5.2
 =======================
 
+Console
+-------
+
+ * deprecated `QuestionHelper::disableStty()`, use `Terminal::disableStty()` instead.
+
 Validator
 ---------
 

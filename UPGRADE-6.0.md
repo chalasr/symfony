@@ -12,6 +12,7 @@ Config
 Console
 -------
 
+ * Removed `QuestionHelper::disableStty()`, use `Terminal::disableStty()` instead.
  * `Command::setHidden()` has a default value (`true`) for `$hidden` parameter
 
 DependencyInjection

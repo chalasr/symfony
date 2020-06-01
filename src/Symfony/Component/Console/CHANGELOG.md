@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+5.2.0
+-----
+
+ * deprecated `QuestionHelper::disableStty()` in favor of `Terminal::disableStty()`
+
 5.1.0
 -----
 

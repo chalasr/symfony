@@ -35,7 +35,6 @@ class QuestionHelper extends Helper
 {
     private $inputStream;
     private static $shell;
-    private static $stty = true;
 
     /**
      * Asks a question to the user.
@@ -89,10 +88,14 @@ class QuestionHelper extends Helper
 
     /**
      * Prevents usage of stty.
+     *
+     * @deprecated since Symfony 5.2
      */
     public static function disableStty()
     {
-        self::$stty = false;
+        trigger_deprecation('symfony/console', '5.2', 'The "%s()" method is deprecated, use "%s::disableStty()" instead.', __METHOD__, Terminal::class);
+
+        Terminal::disableStty();
     }
 
     /**
@@ -109,7 +112,7 @@ class QuestionHelper extends Helper
         $inputStream = $this->inputStream ?: STDIN;
         $autocomplete = $question->getAutocompleterCallback();
 
-        if (null === $autocomplete || !self::$stty || !Terminal::hasSttyAvailable()) {
+        if (null === $autocomplete || !Terminal::hasSttyAvailable()) {
             $ret = false;
             if ($question->isHidden()) {
                 try {
@@ -416,7 +419,7 @@ class QuestionHelper extends Helper
             return $value;
         }
 
-        if (self::$stty && Terminal::hasSttyAvailable()) {
+        if (Terminal::hasSttyAvailable()) {
             $sttyMode = shell_exec('stty -g');
 
             shell_exec('stty -echo');

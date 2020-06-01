@@ -55,6 +55,11 @@ class Terminal
         return self::$height ?: 50;
     }
 
+    public static function disableStty(): void
+    {
+        self::$stty = false;
+    }
+
     /**
      * @internal
      *
