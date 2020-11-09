@@ -28,8 +28,9 @@ final class FirewallConfig
     private $accessDeniedUrl;
     private $listeners;
     private $switchUser;
+    private $authenticatorManagerEnabled;
 
-    public function __construct(string $name, string $userChecker, string $requestMatcher = null, bool $securityEnabled = true, bool $stateless = false, string $provider = null, string $context = null, string $entryPoint = null, string $accessDeniedHandler = null, string $accessDeniedUrl = null, array $listeners = [], $switchUser = null)
+    public function __construct(string $name, string $userChecker, string $requestMatcher = null, bool $securityEnabled = true, bool $stateless = false, string $provider = null, string $context = null, string $entryPoint = null, string $accessDeniedHandler = null, string $accessDeniedUrl = null, array $listeners = [], $switchUser = null, $authenticatorManagerEnabled = false)
     {
         $this->name = $name;
         $this->userChecker = $userChecker;
@@ -43,6 +44,7 @@ final class FirewallConfig
         $this->accessDeniedUrl = $accessDeniedUrl;
         $this->listeners = $listeners;
         $this->switchUser = $switchUser;
+        $this->authenticatorManagerEnabled = $authenticatorManagerEnabled;
     }
 
     public function getName(): string

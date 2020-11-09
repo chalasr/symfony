@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\SecurityBundle\Debug;
 
+use Symfony\Bundle\SecurityBundle\Debug\Authenticator\TraceableAuthenticatorManagerListener;
 use Symfony\Bundle\SecurityBundle\EventListener\FirewallListener;
 use Symfony\Bundle\SecurityBundle\Security\FirewallContext;
 use Symfony\Bundle\SecurityBundle\Security\LazyFirewallContext;
@@ -18,13 +19,14 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Http\Firewall\FirewallListenerInterface;
 
 /**
- * Firewall collecting called listeners.
+ * Firewall collecting called security listeners and authenticators.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
 final class TraceableFirewallListener extends FirewallListener
 {
     private $wrappedListeners = [];
+    private $authenticatorsInfo = [];
 
     public function getWrappedListeners()
     {
@@ -35,12 +37,16 @@ final class TraceableFirewallListener extends FirewallListener
     {
         $wrappedListeners = [];
         $wrappedLazyListeners = [];
+        $authenticatorManagerListener = null;
 
         foreach ($listeners as $listener) {
             if ($listener instanceof LazyFirewallContext) {
-                \Closure::bind(function () use (&$wrappedLazyListeners, &$wrappedListeners) {
+                \Closure::bind(function () use (&$wrappedLazyListeners, &$wrappedListeners, &$authenticatorManagerListener) {
                     $listeners = [];
                     foreach ($this->listeners as $listener) {
+                        if (!$authenticatorManagerListener && $listener instanceof TraceableAuthenticatorManagerListener) {
+                            $authenticatorManagerListener = $listener;
+                        }
                         if ($listener instanceof FirewallListenerInterface) {
                             $listener = new WrappedLazyListener($listener);
                             $listeners[] = $listener;
@@ -61,6 +67,9 @@ final class TraceableFirewallListener extends FirewallListener
                 $wrappedListener = $listener instanceof FirewallListenerInterface ? new WrappedLazyListener($listener) : new WrappedListener($listener);
                 $wrappedListener($event);
                 $wrappedListeners[] = $wrappedListener->getInfo();
+                if (!$authenticatorManagerListener && $listener instanceof TraceableAuthenticatorManagerListener) {
+                    $authenticatorManagerListener = $listener;
+                }
             }
 
             if ($event->hasResponse()) {
@@ -75,5 +84,15 @@ final class TraceableFirewallListener extends FirewallListener
         }
 
         $this->wrappedListeners = array_merge($this->wrappedListeners, $wrappedListeners);
+
+
+        if ($authenticatorManagerListener) {
+            $this->authenticatorsInfo = $authenticatorManagerListener->getAuthenticatorsInfo();
+        }
+    }
+
+    public function getAuthenticatorsInfo(): array
+    {
+        return $this->authenticatorsInfo;
     }
 }

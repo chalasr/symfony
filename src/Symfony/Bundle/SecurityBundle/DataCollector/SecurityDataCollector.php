@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\SecurityBundle\DataCollector;
 
+use Symfony\Bundle\SecurityBundle\Debug\Authenticator\TraceableAuthenticatorManager;
 use Symfony\Bundle\SecurityBundle\Debug\TraceableFirewallListener;
 use Symfony\Bundle\SecurityBundle\Security\FirewallMap;
 use Symfony\Component\HttpFoundation\Request;
@@ -207,6 +208,11 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
         if ($this->firewall) {
             $this->data['listeners'] = $this->firewall->getWrappedListeners();
         }
+
+        $this->data['authenticators'] = [];
+        if ($this->firewall) {
+            $this->data['authenticators'] = $this->firewall->getAuthenticatorsInfo();
+        }
     }
 
     /**
@@ -385,6 +391,11 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
         return $this->data['listeners'];
     }
 
+    public function getAuthenticators()
+    {
+        return $this->data['authenticators'];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -392,4 +403,5 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     {
         return 'security';
     }
+
 }

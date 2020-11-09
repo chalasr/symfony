@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Symfony\Bundle\SecurityBundle\Debug\Authenticator\TraceableAuthenticatorManager;
 use Symfony\Bundle\SecurityBundle\Debug\TraceableFirewallListener;
 use Symfony\Bundle\SecurityBundle\EventListener\VoteListener;
 use Symfony\Component\Security\Core\Authorization\TraceableAccessDecisionManager;

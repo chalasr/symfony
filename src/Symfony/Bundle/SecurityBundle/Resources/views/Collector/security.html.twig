@@ -246,6 +246,41 @@
                         {% endfor %}
                     </table>
                 {% endif %}
+
+                {% if collector.authenticators|default([]) is not empty %}
+                    <h4>Authenticator Manager</h4>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Authenticator</th>
+                            <th>Duration</th>
+                            <th>Response</th>
+                        </tr>
+                        </thead>
+
+                        {% set previous_event = (collector.listeners|first) %}
+                        {% for authenticator in collector.authenticators %}
+                            {% if loop.first or authenticator != previous_event %}
+                                {% if not loop.first %}
+                                    </tbody>
+                                {% endif %}
+
+                                <tbody>
+                                {% set previous_event = authenticator %}
+                            {% endif %}
+
+                            <tr>
+                                <td class="font-normal">{{ profiler_dump(authenticator.stub) }}</td>
+                                <td class="no-wrap">{{ '%0.2f'|format(authenticator.duration * 1000) }} ms</td>
+                                <td class="font-normal">{{ authenticator.response ? profiler_dump(authenticator.response) : '(none)' }}</td>
+                            </tr>
+
+                            {% if loop.last %}
+                                </tbody>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% endif %}
             {% endif %}
         {% elseif collector.enabled %}
             <div class="empty">

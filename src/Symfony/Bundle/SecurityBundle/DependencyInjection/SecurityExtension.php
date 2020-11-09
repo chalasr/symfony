@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\SecurityBundle\DependencyInjection;
 
 use Symfony\Bridge\Twig\Extension\LogoutUrlExtension;
+use Symfony\Bundle\SecurityBundle\Debug\Authenticator\TraceableAuthenticatorManagerListener;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FirewallListenerFactoryInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\RememberMeFactory;
@@ -506,6 +507,14 @@ class SecurityExtension extends Extension implements PrependExtensionInterface
                 ->setDefinition('security.firewall.authenticator.'.$id, new ChildDefinition('security.firewall.authenticator'))
                 ->replaceArgument(0, new Reference($managerId))
             ;
+
+            if ($container->hasDefinition('debug.security.firewall') && $this->authenticatorManagerEnabled) {
+                $container
+                    ->register('debug.security.firewall.authenticator.'.$id, TraceableAuthenticatorManagerListener::class)
+                    ->setDecoratedService('security.firewall.authenticator.'.$id)
+                    ->setArguments([new Reference('debug.security.firewall.authenticator.'.$id.'.inner')])
+                ;
+            }
 
             // user checker listener
             $container
