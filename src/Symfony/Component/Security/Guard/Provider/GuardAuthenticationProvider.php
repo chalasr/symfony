@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Security\Guard\Provider;
 
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -19,6 +20,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationExpiredException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,7 +29,6 @@ use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 use Symfony\Component\Security\Guard\Token\PreAuthenticationGuardToken;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * Responsible for accepting the PreAuthenticationGuardToken and calling
@@ -120,6 +121,10 @@ class GuardAuthenticationProvider implements AuthenticationProviderInterface
 
         if (!$user instanceof UserInterface) {
             throw new \UnexpectedValueException(sprintf('The "%s::getUser()" method must return a UserInterface. You returned "%s".', get_debug_type($guardAuthenticator), get_debug_type($user)));
+        }
+
+        if ($guardAuthenticator instanceof PasswordAuthenticatedInterface && !$user instanceof PasswordAuthenticatedUserInterface) {
+            trigger_deprecation('symfony/security-guard', '5.3', 'Not implementing the "%s" interface in class "%s" while using password-based guard authenticators is deprecated.', PasswordAuthenticatedUserInterface::class, get_debug_type($user));
         }
 
         $this->userChecker->checkPreAuth($user);
