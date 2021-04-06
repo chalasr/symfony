@@ -40,8 +40,8 @@ Symfony is an Open Source, community-driven project with thousands of
 Security Issues
 ---------------
 
-If you discover a security vulnerability within Symfony, please follow our
-[disclosure procedure][20].
+If you discover a security vulnerability within Symfony, 
+please follow our [disclosure procedure][20].
 
 About Us
 --------
