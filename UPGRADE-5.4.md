@@ -17,6 +17,12 @@ HttpKernel
 
  * Deprecate `AbstractTestSessionListener::getSession` inject a session in the request instead
 
+Messenger
+---------
+
+ * Deprecate not setting the `delete_after_ack` config option (or dsn parameter) using the redis transport,
+   its default value will change to `true` in 6.0.
+
 SecurityBundle
 --------------
 

@@ -8,6 +8,8 @@ CHANGELOG
  * Deprecate TLS option, use `rediss://127.0.0.1` instead of `redis://127.0.0.1?tls=1`
  * Add support for `\RedisCluster` instance in `Connection` constructor
  * Add support for Redis Cluster in DSN
+ * Deprecate not setting the `delete_after_ack` config option (or dsn parameter) using the redis transport,
+   its default value will change to `true` in 6.0
 
 5.2.0
 -----
