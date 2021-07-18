@@ -101,6 +101,7 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
             throw new NotNormalizableValueException(sprintf('Parsing datetime string "%s" using format "%s" resulted in %d errors: ', $data, $dateTimeFormat, $dateTimeErrors['error_count'])."\n".implode("\n", $this->formatDateTimeErrors($dateTimeErrors['errors'])));
         }
 
+        var_dump($data);
         try {
             return \DateTime::class === $type ? new \DateTime($data, $timezone) : new \DateTimeImmutable($data, $timezone);
         } catch (\Exception $e) {
