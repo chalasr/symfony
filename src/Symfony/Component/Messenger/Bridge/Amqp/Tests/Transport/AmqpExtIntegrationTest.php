@@ -29,6 +29,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Serializer as SerializerComponent;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
@@ -227,7 +228,7 @@ TXT
     private function createSerializer(): SerializerInterface
     {
         return new Serializer(
-            new SerializerComponent\Serializer([new ObjectNormalizer(), new ArrayDenormalizer()], ['json' => new JsonEncoder()])
+            new SerializerComponent\Serializer([new ObjectNormalizer(), new ArrayDenormalizer(), new DateTimeNormalizer()], ['json' => new JsonEncoder()])
         );
     }
 
