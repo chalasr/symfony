@@ -225,6 +225,7 @@ class Connection
     {
         $availableOptions = array_keys(self::DEFAULT_OPTIONS);
         $availableOptions[] = 'serializer';
+        $availableOptions[] = 'auth';
 
         if (0 < \count($invalidOptions = array_diff(array_keys($options), $availableOptions))) {
             trigger_deprecation('symfony/messenger', '5.1', 'Invalid option(s) "%s" passed to the Redis Messenger transport. Passing invalid options is deprecated.', implode('", "', $invalidOptions));
