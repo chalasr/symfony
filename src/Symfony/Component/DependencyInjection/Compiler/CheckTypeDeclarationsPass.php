@@ -84,7 +84,7 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
             return $value;
         }
 
-        if (!$value instanceof Definition || $value->hasErrors() || $value->isDeprecated()) {
+        if (!$value instanceof Definition || $value->hasErrors()) {
             return parent::processValue($value, $isRoot);
         }
 

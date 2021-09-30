@@ -33,6 +33,6 @@ class TestBundle extends Bundle
             }
         });
 
-        $container->addCompilerPass(new CheckTypeDeclarationsPass(true), PassConfig::TYPE_AFTER_REMOVING, -100);
+        $container->addCompilerPass(new CheckTypeDeclarationsPass(), PassConfig::TYPE_AFTER_REMOVING, -100);
     }
 }
