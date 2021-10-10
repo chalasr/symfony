@@ -218,3 +218,37 @@ jobs:
           cd ..
 
           ./build/php/bin/php ./phpunit --colors=always src/Symfony/Component/Process
+
+  tests-windows:
+    name: Tests Windows
+    runs-on: windows-latest
+
+    env:
+      extensions: xsl,opcache,openssl,apcu,intl,mbstring,fileinfo,pdo_sqlite,curl
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '7.2'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: "none"
+          ini-values: date.timezone=Europe/Paris,memory_limit=-1,default_socket_timeout=10,session.gc_probability=0,apc.enable_cli=1,zend.assertions=1
+          php-version: "${{ matrix.php }}"
+          extensions: "${{ env.extensions }}"
+          tools: flex
+
+      - name: Run tests
+        run: |
+          composer update --no-progress --ansi
+          ./phpunit install
+          ./phpunit --exclude-group tty,benchmark,intl-data
