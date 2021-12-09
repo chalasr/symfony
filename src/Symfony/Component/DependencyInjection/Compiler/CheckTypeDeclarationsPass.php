@@ -210,10 +210,27 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
         $class = null;
 
         if ($value instanceof Definition) {
-            $class = $value->getClass();
+            if ($factory = $value->getFactory()) {
+                if (!\is_callable($factory)) {
+                    return;
+                }
+
+                $factoryReflector = \is_array($factory) ? new \ReflectionMethod($factory[0], $factory[1]) : new \ReflectionFunction($factory);
+                if (!$factoryReflector->hasReturnType()) {
+                    return;
+                }
+
+                $factoryReturnType = $factoryReflector->getReturnType();
+                if ($factoryReturnType->isBuiltin()) {
+                    $type = $factoryReturnType->getName();
+                }
+            } else {
+                $class = $value->getClass();
+            }
 
             if ($class && isset(self::BUILTIN_TYPES[strtolower($class)])) {
                 $class = strtolower($class);
+
             } elseif (!$class || (!$this->autoload && !class_exists($class, false) && !interface_exists($class, false))) {
                 return;
             }
