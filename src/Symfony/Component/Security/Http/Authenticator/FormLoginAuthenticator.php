@@ -82,8 +82,10 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
     {
         $credentials = $this->getCredentials($request);
 
+        $userBadge = new UserBadge($credentials['username'], $this->userProvider->loadUserByIdentifier(...));
+
         $passport = new Passport(
-            new UserBadge($credentials['username'], $this->userProvider->loadUserByIdentifier(...)),
+            $userBadge,
             new PasswordCredentials($credentials['password']),
             [new RememberMeBadge()]
         );
