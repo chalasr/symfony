@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_CLASS)]
 class DisableAutoMapping extends Constraint
 {
     public function __construct(array $options = null)
