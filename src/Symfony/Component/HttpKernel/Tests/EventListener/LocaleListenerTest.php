@@ -117,6 +117,17 @@ class LocaleListenerTest extends TestCase
         $this->assertEquals('de', $request->getLocale());
     }
 
+    public function testRequestLocaleIsNotOverridenIfNoAcceptLanguageHeaderSet()
+    {
+        $request = Request::create('/');
+        $request->setLocale('de');
+        $listener = new LocaleListener($this->requestStack, 'de', null, true, ['fr', 'pl', 'de']);
+        $event = $this->getEvent($request);
+
+        $listener->onKernelRequest($event);
+        $this->assertEquals('de', $request->getLocale());
+    }
+
     public function testRequestPreferredLocaleFromAcceptLanguageHeader()
     {
         $request = Request::create('/');

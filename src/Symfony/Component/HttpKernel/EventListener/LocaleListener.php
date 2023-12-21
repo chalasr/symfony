@@ -41,6 +41,15 @@ class LocaleListener implements EventSubscriberInterface
         $this->requestStack = $requestStack;
         $this->router = $router;
         $this->useAcceptLanguageHeader = $useAcceptLanguageHeader;
+
+        // Make $defaultLocale first in $enabledLocales so that Request::getPreferredLanguages() uses it as fallback
+        if ($defaultLocale !== ($enabledLocales[0] ?? false)) {
+            if (false !== ($k = \array_search($defaultLocale, $enabledLocales))) {
+                unset($enabledLocales[$k]);
+            }
+            array_unshift($enabledLocales, $defaultLocale);
+        }
+
         $this->enabledLocales = $enabledLocales;
     }
 
@@ -68,7 +77,7 @@ class LocaleListener implements EventSubscriberInterface
     {
         if ($locale = $request->attributes->get('_locale')) {
             $request->setLocale($locale);
-        } elseif ($this->useAcceptLanguageHeader && $this->enabledLocales && ($preferredLanguage = $request->getPreferredLanguage($this->enabledLocales))) {
+        } elseif ($this->useAcceptLanguageHeader && $this->enabledLocales && $request->headers->has('Accept-Language') && ($preferredLanguage = $request->getPreferredLanguage($this->enabledLocales))) {
             $request->setLocale($preferredLanguage);
             $request->attributes->set('_vary_by_language', true);
         }
