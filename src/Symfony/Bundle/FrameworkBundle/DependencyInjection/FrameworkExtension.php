@@ -1967,6 +1967,8 @@ class FrameworkExtension extends Extension
             $resolversLocator->setValues($resolversLocator->getValues() + [
                 'string' => new Reference('type_info.resolver.string'),
             ]);
+
+            // Decorates Reflection
         }
     }
 

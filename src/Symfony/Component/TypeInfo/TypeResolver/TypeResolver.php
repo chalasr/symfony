@@ -63,12 +63,12 @@ final readonly class TypeResolver implements TypeResolverInterface
 
     public static function create(): self
     {
-        $resolvers = new class() implements ContainerInterface {
+        $resolvers = new class(class_exists(PhpDocParser::class)) implements ContainerInterface {
             private readonly array $resolvers;
 
-            public function __construct()
+            public function __construct(bool $hasPhpDocParser = false)
             {
-                $stringTypeResolver = class_exists(PhpDocParser::class) ? new StringTypeResolver() : null;
+                $stringTypeResolver = $hasPhpDocParser ? new StringTypeResolver() : null;
                 $typeContextFactory = new TypeContextFactory($stringTypeResolver);
                 $reflectionTypeResolver = new ReflectionTypeResolver();
 
@@ -79,7 +79,7 @@ final readonly class TypeResolver implements TypeResolverInterface
                     \ReflectionFunctionAbstract::class => new ReflectionReturnTypeResolver($reflectionTypeResolver, $typeContextFactory),
                 ];
 
-                if (null !== $stringTypeResolver) {
+                if ($stringTypeResolver) {
                     $resolvers['string'] = $stringTypeResolver;
                 }
 
