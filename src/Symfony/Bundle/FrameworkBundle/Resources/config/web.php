@@ -46,6 +46,9 @@ return static function (ContainerConfigurator $container) {
             ->tag('monolog.logger', ['channel' => 'request'])
 
         ->set('argument_metadata_factory', ArgumentMetadataFactory::class)
+            ->args([
+                service('type_info.resolver')
+            ])
 
         ->set('argument_resolver', ArgumentResolver::class)
             ->args([

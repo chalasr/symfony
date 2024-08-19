@@ -31,6 +31,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedPropertyException;
 use Symfony\Component\Serializer\Exception\UnsupportedFormatException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\TypeInfo\TypeResolver\TypeResolverInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -202,6 +203,8 @@ class RequestPayloadValueResolver implements ValueResolverInterface, EventSubscr
             throw new UnsupportedMediaTypeHttpException(\sprintf('Unsupported format, expects "%s", but "%s" given.', implode('", "', (array) $attribute->acceptFormat), $format));
         }
 
+        // @deprecated since Symfony 7.2. In 8.0, replace the whole if/else block by:
+        // $type = $argument->getType();
         if ('array' === $argument->getType() && null !== $attribute->type) {
             $type = $attribute->type.'[]';
         } else {
