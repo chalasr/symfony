@@ -14,24 +14,20 @@ namespace Symfony\Component\Console\Attribute;
 use Symfony\Component\Console\Attribute\Reflection\ReflectionMember;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\Suggestion;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\String\UnicodeString;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER | \Attribute::TARGET_PROPERTY)]
 class Argument
 {
-    private const ALLOWED_TYPES = ['string', 'bool', 'int', 'float', 'array'];
-
-    private string|bool|int|float|array|null $default = null;
-    private array|\Closure $suggestedValues;
+    public string|bool|int|float|array|null $default = null;
+    public array|\Closure $suggestedValues;
     private ?int $mode = null;
     /**
      * @var string|class-string<\BackedEnum>
      */
-    private string $typeName = '';
+    public string $typeName = '';
     private ?InteractiveAttributeInterface $interactiveAttribute = null;
 
     /**
@@ -68,11 +64,6 @@ class Argument
         }
 
         $self->typeName = $type->getName();
-        $isBackedEnum = is_subclass_of($self->typeName, \BackedEnum::class);
-
-        if (!\in_array($self->typeName, self::ALLOWED_TYPES, true) && !$isBackedEnum) {
-            throw new LogicException(\sprintf('The type "%s" on %s "$%s" of "%s" is not supported as a command argument. Only "%s" types and backed enums are allowed.', $self->typeName, $reflection->getMemberName(), $name, $reflection->getSourceName(), implode('", "', self::ALLOWED_TYPES)));
-        }
 
         if (!$self->name) {
             $self->name = (new UnicodeString($name))->kebab();
@@ -80,9 +71,9 @@ class Argument
 
         $self->default = $reflection->hasDefaultValue() ? $reflection->getDefaultValue() : null;
 
-        $isOptional = $reflection->hasDefaultValue() || $reflection->isNullable();
+        $isOptional = $reflection->hasDefaultValue() || $reflection->isNullable() || $reflection->isVariadic();
         $self->mode = $isOptional ? InputArgument::OPTIONAL : InputArgument::REQUIRED;
-        if ('array' === $self->typeName) {
+        if ('array' === $self->typeName || $reflection->isVariadic()) {
             $self->mode |= InputArgument::IS_ARRAY;
         }
 
@@ -92,7 +83,7 @@ class Argument
             $self->suggestedValues = [$instance, $self->suggestedValues[1]];
         }
 
-        if ($isBackedEnum && !$self->suggestedValues) {
+        if (is_subclass_of($self->typeName, \BackedEnum::class) && !$self->suggestedValues) {
             $self->suggestedValues = array_column($self->typeName::cases(), 'value');
         }
 
@@ -113,20 +104,6 @@ class Argument
         $suggestedValues = \is_callable($this->suggestedValues) ? ($this->suggestedValues)(...) : $this->suggestedValues;
 
         return new InputArgument($this->name, $this->mode, $this->description, $this->default, $suggestedValues);
-    }
-
-    /**
-     * @internal
-     */
-    public function resolveValue(InputInterface $input): mixed
-    {
-        $value = $input->getArgument($this->name);
-
-        if (is_subclass_of($this->typeName, \BackedEnum::class) && (\is_string($value) || \is_int($value))) {
-            return $this->typeName::tryFrom($value) ?? throw InvalidArgumentException::fromEnumValue($this->name, $value, $this->suggestedValues);
-        }
-
-        return $value;
     }
 
     /**
