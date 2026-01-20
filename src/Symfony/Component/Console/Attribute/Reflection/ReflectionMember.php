@@ -12,15 +12,53 @@
 namespace Symfony\Component\Console\Attribute\Reflection;
 
 use Symfony\Component\String\UnicodeString;
+use Symfony\Component\TypeInfo\Type;
 
 /**
  * @internal
  */
 class ReflectionMember
 {
+    private ?Type $typeInfo = null;
+
     public function __construct(
         private readonly \ReflectionParameter|\ReflectionProperty $member,
+        private readonly ?\Closure $typeInfoResolver = null,
     ) {
+    }
+
+    /**
+     * Returns the TypeInfo type if available (requires symfony/type-info).
+     * Type resolution is deferred until first call and cached.
+     */
+    public function getTypeInfo(): ?Type
+    {
+        if ($this->typeInfo) {
+            return $this->typeInfo;
+        }
+
+        if (null === $this->typeInfoResolver) {
+            return null;
+        }
+
+        try {
+            return $this->typeInfo = ($this->typeInfoResolver)();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new ReflectionMember with a fixed TypeInfo type.
+     *
+     * @internal Used for per-element resolution of typed collections
+     */
+    public function withTypeInfo(Type $type): self
+    {
+        $clone = clone $this;
+        $clone->typeInfo = $type;
+
+        return $clone;
     }
 
     /**

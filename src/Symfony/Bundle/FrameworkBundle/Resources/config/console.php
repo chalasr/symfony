@@ -423,6 +423,7 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 abstract_arg('argument value resolvers'),
                 abstract_arg('named argument value resolvers'),
+                service('type_info.resolver')->nullOnInvalid(),
             ])
 
         ->set('console.argument_resolver.backed_enum', BackedEnumValueResolver::class)

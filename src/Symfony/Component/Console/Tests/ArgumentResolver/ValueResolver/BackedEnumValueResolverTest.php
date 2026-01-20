@@ -210,6 +210,87 @@ class BackedEnumValueResolverTest extends TestCase
 
         $this->assertSame([BackedEnumTestPriority::High], $result);
     }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionOfEnums()
+    {
+        $resolver = new BackedEnumValueResolver();
+
+        $input = new ArrayInput(['statuses' => ['pending', 'completed']], new InputDefinition([
+            new InputArgument('statuses', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $statuses,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::enum(BackedEnumTestStatus::class, \Symfony\Component\TypeInfo\Type::string())));
+
+        $result = iterator_to_array($resolver->resolve('statuses', $input, $member));
+
+        $this->assertSame([[BackedEnumTestStatus::Pending, BackedEnumTestStatus::Completed]], $result);
+    }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionOfIntEnums()
+    {
+        $resolver = new BackedEnumValueResolver();
+
+        $input = new ArrayInput(['priorities' => ['0', '2']], new InputDefinition([
+            new InputArgument('priorities', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $priorities,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::enum(BackedEnumTestPriority::class, \Symfony\Component\TypeInfo\Type::int())));
+
+        $result = iterator_to_array($resolver->resolve('priorities', $input, $member));
+
+        $this->assertSame([[BackedEnumTestPriority::Low, BackedEnumTestPriority::Critical]], $result);
+    }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionRejectsInvalidEnumValue()
+    {
+        $resolver = new BackedEnumValueResolver();
+
+        $input = new ArrayInput(['statuses' => ['pending', 'invalid']], new InputDefinition([
+            new InputArgument('statuses', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $statuses,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::enum(BackedEnumTestStatus::class, \Symfony\Component\TypeInfo\Type::string())));
+
+        $this->expectException(\Symfony\Component\Console\Exception\InvalidArgumentException::class);
+
+        iterator_to_array($resolver->resolve('statuses', $input, $member));
+    }
 }
 
 enum BackedEnumTestStatus: string

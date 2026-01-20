@@ -24,7 +24,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\TypeInfo\Type\CollectionType;
+use Symfony\Component\TypeInfo\TypeResolver\TypeResolverInterface;
 use Symfony\Contracts\Service\ServiceProviderInterface;
 
 /**
@@ -40,6 +43,7 @@ final class ArgumentResolver implements ArgumentResolverInterface
     public function __construct(
         private iterable $argumentValueResolvers = [],
         private ?ContainerInterface $namedResolvers = null,
+        private ?TypeResolverInterface $typeResolver = null,
     ) {
     }
 
@@ -49,7 +53,11 @@ final class ArgumentResolver implements ArgumentResolverInterface
 
         $argumentReflectors = [];
         foreach ($reflector->getParameters() as $param) {
-            $argumentReflectors[$param->getName()] = new ReflectionMember($param);
+            $typeInfoResolver = null !== $this->typeResolver
+                ? fn () => $this->typeResolver->resolve($param)
+                : null;
+
+            $argumentReflectors[$param->getName()] = new ReflectionMember($param, $typeInfoResolver);
         }
 
         $arguments = [];
@@ -106,6 +114,14 @@ final class ArgumentResolver implements ArgumentResolverInterface
                 }
             }
 
+            // Try per-element resolution for typed collections (e.g., list<CustomObject>)
+            if ($resolved = $this->resolveCollectionElements($argumentName, $input, $member, $argumentValueResolvers, $disabledResolvers)) {
+                foreach ($resolved as $element) {
+                    $arguments[] = $element;
+                }
+                continue;
+            }
+
             // For variadic parameters with explicit input mapping, 0 values is valid
             if ($member->isVariadic() && (Argument::tryFrom($member->getMember()) || Option::tryFrom($member->getMember()))) {
                 continue;
@@ -155,5 +171,85 @@ final class ArgumentResolver implements ArgumentResolverInterface
             new Resolver\DefaultValueResolver(),
             new Resolver\VariadicValueResolver(),
         ];
+    }
+
+    /**
+     * Resolves collection elements individually when the collection type is known via TypeInfo.
+     *
+     * This handles cases like `list<CustomObject>` where CustomObject has its own
+     * resolver that doesn't handle lists on its own.
+     *
+     * @param iterable<ValueResolverInterface> $resolvers
+     * @param array<string, bool>              $disabledResolvers
+     *
+     * @return list<mixed>|null Resolved elements or null if not applicable
+     */
+    private function resolveCollectionElements(string $argumentName, InputInterface $input, ReflectionMember $member, iterable $resolvers, array $disabledResolvers): ?array
+    {
+        $type = $member->getTypeInfo();
+
+        if (!$type instanceof CollectionType) {
+            return null;
+        }
+
+        // Get input mapping to retrieve raw values
+        $inputMapping = Argument::tryFrom($member->getMember()) ?? Option::tryFrom($member->getMember());
+        if (!$inputMapping) {
+            return null;
+        }
+
+        $inputName = $inputMapping->name;
+        $rawValues = $inputMapping instanceof Argument
+            ? $input->getArgument($inputName)
+            : $input->getOption($inputName);
+
+        if (!\is_array($rawValues)) {
+            return null;
+        }
+
+        if ([] === $rawValues) {
+            return [];
+        }
+
+        $elementType = $type->getCollectionValueType();
+        $elementMember = $member->withTypeInfo($elementType);
+        $resolved = [];
+
+        foreach ($rawValues as $index => $rawValue) {
+            // Create synthetic input with single element value
+            $syntheticInput = $this->createSyntheticInput($inputMapping, $inputName, $rawValue);
+
+            $elementResolved = false;
+            foreach ($resolvers as $name => $resolver) {
+                if (isset($disabledResolvers[\is_int($name) ? $resolver::class : $name])) {
+                    continue;
+                }
+
+                foreach ($resolver->resolve($argumentName, $syntheticInput, $elementMember) as $value) {
+                    $resolved[$index] = $value;
+                    $elementResolved = true;
+                    break 2;
+                }
+            }
+
+            if (!$elementResolved) {
+                // No resolver could handle this element type
+                return null;
+            }
+        }
+
+        return $resolved;
+    }
+
+    /**
+     * Creates a synthetic input containing a single element value.
+     */
+    private function createSyntheticInput(Argument|Option $inputMapping, string $inputName, mixed $value): InputInterface
+    {
+        if ($inputMapping instanceof Argument) {
+            return new ArrayInput([$inputName => $value]);
+        }
+
+        return new ArrayInput(['--'.$inputName => $value]);
     }
 }

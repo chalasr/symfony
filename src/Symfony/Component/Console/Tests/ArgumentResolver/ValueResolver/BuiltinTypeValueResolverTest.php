@@ -258,6 +258,88 @@ class BuiltinTypeValueResolverTest extends TestCase
 
         $this->assertSame([42], $result);
     }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionOfIntegers()
+    {
+        $resolver = new BuiltinTypeValueResolver();
+
+        $input = new ArrayInput(['ids' => ['1', '2', '3']], new InputDefinition([
+            new InputArgument('ids', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $ids,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::int()));
+
+        $result = iterator_to_array($resolver->resolve('ids', $input, $member));
+
+        $this->assertSame([[1, 2, 3]], $result);
+    }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionOfFloats()
+    {
+        $resolver = new BuiltinTypeValueResolver();
+
+        $input = new ArrayInput(['values' => ['1.5', '2.7', '3']], new InputDefinition([
+            new InputArgument('values', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $values,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::float()));
+
+        $result = iterator_to_array($resolver->resolve('values', $input, $member));
+
+        $this->assertSame([[1.5, 2.7, 3.0]], $result);
+    }
+
+    /**
+     * @requires function \Symfony\Component\TypeInfo\Type::list
+     */
+    public function testResolveTypedCollectionRejectsInvalidValue()
+    {
+        $resolver = new BuiltinTypeValueResolver();
+
+        $input = new ArrayInput(['ids' => ['1', 'foo', '3']], new InputDefinition([
+            new InputArgument('ids', InputArgument::IS_ARRAY),
+        ]));
+
+        $command = new class {
+            public function __invoke(
+                #[Argument]
+                array $ids,
+            ) {
+            }
+        };
+        $reflection = new \ReflectionMethod($command, '__invoke');
+        $parameter = $reflection->getParameters()[0];
+        $member = new ReflectionMember($parameter, fn () => \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::int()));
+
+        $this->expectException(\Symfony\Component\Console\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Value "foo" at index 1 of "ids" cannot be safely converted to int.');
+
+        iterator_to_array($resolver->resolve('ids', $input, $member));
+    }
 }
 
 enum DummyBackedEnum: string

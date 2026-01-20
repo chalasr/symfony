@@ -17,6 +17,7 @@ use Symfony\Component\Console\Attribute\Reflection\ReflectionMember;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\Uid\AbstractUid;
 
 /**
@@ -29,25 +30,50 @@ final class UidValueResolver implements ValueResolverInterface
     public function resolve(string $argumentName, InputInterface $input, ReflectionMember $member): iterable
     {
         if ($argument = Argument::tryFrom($member->getMember())) {
-            if (!is_subclass_of($argument->typeName, AbstractUid::class)) {
+            // Check TypeInfo first (for per-element resolution of typed collections)
+            $uidClass = $this->getUidClass($member) ?? $argument->typeName;
+
+            if (!is_subclass_of($uidClass, AbstractUid::class)) {
                 return [];
             }
 
-            return [$this->resolveArgument($argument, $input)];
+            return [$this->resolveArgument($argument, $input, $uidClass)];
         }
 
         if ($option = Option::tryFrom($member->getMember())) {
-            if (!is_subclass_of($option->typeName, AbstractUid::class)) {
+            // Check TypeInfo first (for per-element resolution of typed collections)
+            $uidClass = $this->getUidClass($member) ?? $option->typeName;
+
+            if (!is_subclass_of($uidClass, AbstractUid::class)) {
                 return [];
             }
 
-            return [$this->resolveOption($option, $input)];
+            return [$this->resolveOption($option, $input, $uidClass)];
         }
 
         return [];
     }
 
-    private function resolveArgument(Argument $argument, InputInterface $input): ?AbstractUid
+    /**
+     * @return class-string<AbstractUid>|null
+     */
+    private function getUidClass(ReflectionMember $member): ?string
+    {
+        $type = $member->getTypeInfo();
+
+        if (!$type instanceof ObjectType) {
+            return null;
+        }
+
+        $className = $type->getClassName();
+
+        return is_subclass_of($className, AbstractUid::class) ? $className : null;
+    }
+
+    /**
+     * @param class-string<AbstractUid> $uidClass
+     */
+    private function resolveArgument(Argument $argument, InputInterface $input, string $uidClass): ?AbstractUid
     {
         $value = $input->getArgument($argument->name);
 
@@ -55,18 +81,21 @@ final class UidValueResolver implements ValueResolverInterface
             return null;
         }
 
-        if ($value instanceof $argument->typeName) {
+        if ($value instanceof $uidClass) {
             return $value;
         }
 
-        if (!\is_string($value) || !$argument->typeName::isValid($value)) {
+        if (!\is_string($value) || !$uidClass::isValid($value)) {
             throw new InvalidArgumentException(\sprintf('The uid for the "%s" argument is invalid.', $argument->name));
         }
 
-        return $argument->typeName::fromString($value);
+        return $uidClass::fromString($value);
     }
 
-    private function resolveOption(Option $option, InputInterface $input): ?AbstractUid
+    /**
+     * @param class-string<AbstractUid> $uidClass
+     */
+    private function resolveOption(Option $option, InputInterface $input, string $uidClass): ?AbstractUid
     {
         $value = $input->getOption($option->name);
 
@@ -74,14 +103,14 @@ final class UidValueResolver implements ValueResolverInterface
             return null;
         }
 
-        if ($value instanceof $option->typeName) {
+        if ($value instanceof $uidClass) {
             return $value;
         }
 
-        if (!\is_string($value) || !$option->typeName::isValid($value)) {
+        if (!\is_string($value) || !$uidClass::isValid($value)) {
             throw new InvalidOptionException(\sprintf('The uid for the "--%s" option is invalid.', $option->name));
         }
 
-        return $option->typeName::fromString($value);
+        return $uidClass::fromString($value);
     }
 }

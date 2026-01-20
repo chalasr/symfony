@@ -24,6 +24,7 @@ use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\String\UnicodeString;
+use Symfony\Component\TypeInfo\Type\ObjectType;
 
 /**
  * Resolves a Command parameter holding the #[MapEntity] attribute to an Entity.
@@ -51,8 +52,11 @@ final class EntityValueResolver implements ValueResolverInterface
             return [];
         }
 
+        // Check TypeInfo first (for per-element resolution of typed collections)
+        $typeInfoClass = $this->getTypeInfoClass($member);
+
         $type = $member->getType();
-        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+        if (!$typeInfoClass && (!$type instanceof \ReflectionNamedType || $type->isBuiltin())) {
             return [];
         }
 
@@ -65,7 +69,13 @@ final class EntityValueResolver implements ValueResolverInterface
         // #[MapEntity] is optional
         $attribute = $member->getAttribute(MapEntity::class) ?? $this->defaults;
 
-        $options = $attribute->withDefaults($this->defaults, $type->getName());
+        // Use TypeInfo class if available (for per-element resolution), otherwise use reflection type
+        $className = $typeInfoClass ?? ($type instanceof \ReflectionNamedType ? $type->getName() : null);
+        if (!$className) {
+            return [];
+        }
+
+        $options = $attribute->withDefaults($this->defaults, $className);
 
         if (!$options->class) {
             return [];
@@ -177,5 +187,21 @@ final class EntityValueResolver implements ValueResolverInterface
         }
 
         return $this->buildCriteriaFromMapping($manager, $options, $mapping, $values);
+    }
+
+    /**
+     * Gets the class name from TypeInfo (for per-element resolution of typed collections).
+     *
+     * @return class-string|null
+     */
+    private function getTypeInfoClass(ReflectionMember $member): ?string
+    {
+        $type = $member->getTypeInfo();
+
+        if (!$type instanceof ObjectType) {
+            return null;
+        }
+
+        return $type->getClassName();
     }
 }
