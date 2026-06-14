@@ -52,6 +52,7 @@ class MessengerPass implements CompilerPassInterface
         $this->registerHandlers($container, $busIds);
 
         $this->registerTypeMapping($container);
+        $this->registerHandlerWarmup($container);
     }
 
     private function registerHandlers(ContainerBuilder $container, array $busIds): void
@@ -428,5 +429,33 @@ class MessengerPass implements CompilerPassInterface
         }
 
         $container->getDefinition('messenger.transport.symfony_serializer')->setArgument(3, $typeToClassMap);
+    }
+
+    private function registerHandlerWarmup(ContainerBuilder $container): void
+    {
+        if (!$container->hasDefinition('messenger.listener.warm_handlers') || !$container->hasDefinition('messenger.senders_locator')) {
+            return;
+        }
+
+        $sendersMap = $container->getDefinition('messenger.senders_locator')->getArgument(0);
+        if (!\is_array($sendersMap)) {
+            return;
+        }
+
+        // Reverse the routing: message → [transports] becomes transport → [messages]
+        $messagesByTransport = [];
+        foreach ($sendersMap as $message => $transports) {
+            foreach ((array) $transports as $transport) {
+                $messagesByTransport[$transport][] = $message;
+            }
+        }
+
+        $busIds = array_keys($container->findTaggedServiceIds('messenger.bus'));
+        $defaultBus = $busIds[0] ?? 'messenger.bus.default';
+
+        $container->getDefinition('messenger.listener.warm_handlers')
+            ->replaceArgument(0, new Reference($defaultBus.'.messenger.handlers_locator'))
+            ->replaceArgument(1, $messagesByTransport)
+        ;
     }
 }

@@ -26,6 +26,7 @@ use Symfony\Component\Messenger\EventListener\SendFailedMessageForRetryListener;
 use Symfony\Component\Messenger\EventListener\SendFailedMessageToFailureTransportListener;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnCustomStopExceptionListener;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnRestartSignalListener;
+use Symfony\Component\Messenger\EventListener\WarmHandlersOnWorkerStartListener;
 use Symfony\Component\Messenger\Handler\RedispatchMessageHandler;
 use Symfony\Component\Messenger\Middleware\AddBusNameStampMiddleware;
 use Symfony\Component\Messenger\Middleware\AddDefaultStampsMiddleware;
@@ -265,6 +266,15 @@ return static function (ContainerConfigurator $container) {
 
         ->set('messenger.listener.reset_memory_usage', ResetMemoryUsageListener::class)
             ->tag('kernel.event_subscriber')
+
+        ->set('messenger.listener.warm_handlers', WarmHandlersOnWorkerStartListener::class)
+            ->args([
+                abstract_arg('handlers locator'),
+                abstract_arg('message classes by transport'),
+                service('logger')->ignoreOnInvalid(),
+            ])
+            ->tag('kernel.event_subscriber')
+            ->tag('monolog.logger', ['channel' => 'messenger'])
 
         ->set('messenger.routable_message_bus', RoutableMessageBus::class)
             ->args([
